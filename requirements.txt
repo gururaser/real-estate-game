@@ -1,0 +1,4 @@
+superlinked==37.0.0
+superlinked-server==1.53.3
+kagglehub==0.3.13
+pandas==2.3.2

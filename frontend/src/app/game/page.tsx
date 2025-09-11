@@ -161,7 +161,7 @@ export default function Game() {
   };
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() || !targetProperty) return;
 
     setLoading(true);
     try {
@@ -174,6 +174,7 @@ export default function Game() {
         body: JSON.stringify({
           natural_query: searchQuery.toLowerCase(),
           limit: 5,
+          ids_exclude: [targetProperty.id],
         }),
       });
       const data = await response.json();

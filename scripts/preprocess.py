@@ -11,6 +11,17 @@ combined_df = pd.concat([california_df, georgia_df], ignore_index=True)
 # Remove rows where description column is empty
 combined_df = combined_df.dropna(subset=['description'])
 
+# Remove rows with bad geocode (hasBadGeocode = 1)
+if 'hasBadGeocode' in combined_df.columns:
+    initial_count = len(combined_df)
+    combined_df = combined_df[combined_df['hasBadGeocode'] != 1]
+    removed_count = initial_count - len(combined_df)
+    print(f"Removed {removed_count} rows with bad geocode")
+    
+    # Drop the hasBadGeocode column entirely
+    combined_df = combined_df.drop(columns=['hasBadGeocode'])
+    print("Dropped hasBadGeocode column")
+
 # Drop 'Unnamed: 0' column if it exists
 if 'Unnamed: 0' in combined_df.columns:
     combined_df = combined_df.drop(columns=['Unnamed: 0'])

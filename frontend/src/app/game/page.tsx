@@ -544,37 +544,7 @@ export default function Game() {
                   </div>
                 </details>
 
-                {/* Location Coordinates */}
-                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-lg">📍</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">Location Coordinates</h3>
-                        <p className="text-sm text-gray-400">Property GPS coordinates</p>
-                      </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="p-4 border-t border-white/10">
-                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-400">Latitude</p>
-                          <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.latitude}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-400">Longitude</p>
-                          <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.longitude}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </details>                {/* Date & Time Information */}
+                {/* Date & Time Information */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
                   <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
                     <div className="flex items-center">
@@ -591,52 +561,10 @@ export default function Game() {
                     </svg>
                   </summary>
                   <div className="p-4 border-t border-white/10">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Listing Date</p>
                         <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.datePostedString}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Time Stamp</p>
-                        <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.time}</p>
-                      </div>
-                    </div>
-                  </div>
-                </details>
-
-                {/* Financial Information */}
-                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-lg">💰</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">Financial Information</h3>
-                        <p className="text-sm text-gray-400">Property price and financial metrics</p>
-                      </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="p-4 border-t border-white/10">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Price per Sq Ft</p>
-                        <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.pricePerSquareFoot}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Living Area Value</p>
-                        <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.livingAreaValue}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Currency</p>
-                        <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.currency}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Time Stamp</p>
-                        <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.time}</p>
                       </div>
                     </div>
                   </div>

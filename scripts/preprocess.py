@@ -27,6 +27,10 @@ for col in float_cols:
 if 'livingAreaValue' in combined_df.columns and combined_df['livingAreaValue'].dtype == 'float64':
     combined_df['livingAreaValue'] = combined_df['livingAreaValue'].fillna(0).round().astype('Int64')
 
+# Convert time column from milliseconds to seconds for timestamp
+if 'time' in combined_df.columns:
+    combined_df['time'] = combined_df['time'] // 1000  # Convert milliseconds to seconds
+
 # Normalize text-based columns to lowercase
 text_cols = combined_df.select_dtypes(include=['object']).columns
 for col in text_cols:

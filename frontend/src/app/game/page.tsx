@@ -332,174 +332,344 @@ export default function Game() {
                 <h2 className="text-3xl font-bold text-white">Target Property</h2>
               </div>
 
-              <div className="space-y-4 text-gray-300">
-                {/* Basic Info Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">City</p>
-                    <p className="text-lg font-semibold text-white">{targetProperty.fields.city}</p>
+              <div className="space-y-4">
+                {/* Basic Information */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">📋</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Basic Information</h3>
+                        <p className="text-sm text-gray-400">Property location and basic structure details</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">City</p>
+                        <p className="text-lg font-semibold text-white">{targetProperty.fields.city}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">State</p>
+                        <p className="text-lg font-semibold text-white">{targetProperty.fields.state}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">County</p>
+                        <p className="text-lg font-semibold text-white">{targetProperty.fields.county}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Year Built</p>
+                        <p className="text-lg font-semibold text-white">{targetProperty.fields.yearBuilt}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">ZIP Code</p>
+                        <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.zipcode}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Country</p>
+                        <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.country}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">State</p>
-                    <p className="text-lg font-semibold text-white">{targetProperty.fields.state}</p>
-                  </div>
-                </div>
+                </details>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">County</p>
-                    <p className="text-lg font-semibold text-white">{targetProperty.fields.county}</p>
+                {/* Physical Features */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">🏠</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Physical Features</h3>
+                        <p className="text-sm text-gray-400">Property size, room count, and building characteristics</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Bedrooms</p>
+                        <p className="text-xl font-bold text-purple-300">{targetProperty.fields.bedrooms}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Bathrooms</p>
+                        <p className="text-xl font-bold text-pink-300">{targetProperty.fields.bathrooms}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Living Area (sq ft)</p>
+                        <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.livingArea}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Building Area</p>
+                        <p className="text-lg font-semibold text-cyan-300">{targetProperty.fields.buildingArea} sq ft</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Levels</p>
+                        <p className="text-lg font-semibold text-orange-300">{targetProperty.fields.levels}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Home Type</p>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                          {targetProperty.fields.homeType}
+                        </span>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Lot Area Units</p>
+                        <p className="text-lg font-semibold text-green-300">{targetProperty.fields.lotAreaUnits}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Year Built</p>
-                    <p className="text-lg font-semibold text-white">{targetProperty.fields.yearBuilt}</p>
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Bedrooms</p>
-                    <p className="text-xl font-bold text-purple-300">{targetProperty.fields.bedrooms}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Bathrooms</p>
-                    <p className="text-xl font-bold text-pink-300">{targetProperty.fields.bathrooms}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Area (sq ft)</p>
-                    <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.livingArea}</p>
-                  </div>
-                </div>
-
-                {/* Additional Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Building Area</p>
-                    <p className="text-lg font-semibold text-cyan-300">{targetProperty.fields.buildingArea} sq ft</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Lot Area Units</p>
-                    <p className="text-lg font-semibold text-green-300">{targetProperty.fields.lotAreaUnits}</p>
-                  </div>
-                </div>
-
-                {/* Property Type & Features */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-2">Home Type</p>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                      {targetProperty.fields.homeType}
-                    </span>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-2">Levels</p>
-                    <p className="text-lg font-semibold text-orange-300">{targetProperty.fields.levels}</p>
-                  </div>
-                </div>
+                </details>
 
                 {/* Garage & Parking */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Garage Spaces</p>
-                    <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.garageSpaces}</p>
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">🚗</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Garage & Parking</h3>
+                        <p className="text-sm text-gray-400">Property parking and garage features</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Garage Spaces</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.garageSpaces}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Has Garage</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.hasGarage ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Parking</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.parking}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Garage</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.hasGarage ? 'Yes' : 'No'}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Has Garage</p>
-                    <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.hasGarage ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
+                </details>
 
                 {/* Amenities */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Pool</p>
-                    <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.pool ? 'Yes' : 'No'}</p>
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">🏊</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Amenities</h3>
+                        <p className="text-sm text-gray-400">Property pool, spa, and comfort features</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Pool</p>
+                        <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.pool ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Spa</p>
+                        <p className="text-lg font-semibold text-pink-300">{targetProperty.fields.spa ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Pets Allowed</p>
+                        <p className="text-lg font-semibold text-green-300">{targetProperty.fields.hasPetsAllowed ? 'Yes' : 'No'}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Spa</p>
-                    <p className="text-lg font-semibold text-pink-300">{targetProperty.fields.spa ? 'Yes' : 'No'}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Pets Allowed</p>
-                    <p className="text-lg font-semibold text-green-300">{targetProperty.fields.hasPetsAllowed ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
+                </details>
 
                 {/* Property Status */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Bank Owned</p>
-                    <p className="text-lg font-semibold text-red-300">{targetProperty.fields.is_bankOwned ? 'Yes' : 'No'}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">For Auction</p>
-                    <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.is_forAuction ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
-
-                {/* Location & Coordinates */}
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-sm text-gray-400 mb-2">Location Coordinates</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-gray-400">Latitude</p>
-                      <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.latitude}</p>
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">🏦</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Property Status</h3>
+                        <p className="text-sm text-gray-400">Property sale status and special conditions</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Longitude</p>
-                      <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.longitude}</p>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Bank Owned</p>
+                        <p className="text-lg font-semibold text-red-300">{targetProperty.fields.is_bankOwned ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">For Auction</p>
+                        <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.is_forAuction ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">New Construction</p>
+                        <p className="text-lg font-semibold text-green-300">{targetProperty.fields.isNewConstruction ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Event Type</p>
+                        <p className="text-lg font-semibold text-violet-300">{targetProperty.fields.event}</p>
+                      </div>
                     </div>
                   </div>
-                </div>                {/* Additional Info */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">ZIP Code</p>
-                    <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.zipcode}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Country</p>
-                    <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.country}</p>
-                  </div>
-                </div>
+                </details>
 
-                {/* Dates & Events */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Listing Date</p>
-                    <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.datePostedString}</p>
+                {/* Location Coordinates */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">📍</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Location Coordinates</h3>
+                        <p className="text-sm text-gray-400">Property GPS coordinates</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-gray-400">Latitude</p>
+                          <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.latitude}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400">Longitude</p>
+                          <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.longitude}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Event Type</p>
-                    <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.event}</p>
+                </details>                {/* Date & Time Information */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">📅</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Date & Time Information</h3>
+                        <p className="text-sm text-gray-400">Property listing date and time information</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Listing Date</p>
+                        <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.datePostedString}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Time Stamp</p>
+                        <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.time}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </details>
 
-                {/* Financial Info */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Price per Sq Ft</p>
-                    <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.pricePerSquareFoot}</p>
+                {/* Financial Information */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">💰</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Financial Information</h3>
+                        <p className="text-sm text-gray-400">Property price and financial metrics</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Price per Sq Ft</p>
+                        <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.pricePerSquareFoot}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Living Area Value</p>
+                        <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.livingAreaValue}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Currency</p>
+                        <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.currency}</p>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Time Stamp</p>
+                        <p className="text-lg font-semibold text-yellow-300">{targetProperty.fields.time}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-1">Living Area Value</p>
-                    <p className="text-lg font-semibold text-lime-300">${targetProperty.fields.livingAreaValue}</p>
-                  </div>
-                </div>
+                </details>
 
-                {/* Description with Custom Scrollbar */}
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-sm text-gray-400 mb-2">Description</p>
-                  <div className="text-sm text-gray-300 max-h-32 overflow-y-auto leading-relaxed custom-scrollbar">
-                    {targetProperty.fields.description}
+                {/* Descriptions */}
+                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-gray-500 to-slate-500 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-lg">📝</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Descriptions</h3>
+                        <p className="text-sm text-gray-400">Property detailed description and address information</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="p-4 border-t border-white/10 space-y-4">
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                      <p className="text-sm text-gray-400 mb-2">Property Description</p>
+                      <div className="text-sm text-gray-300 max-h-32 overflow-y-auto leading-relaxed custom-scrollbar">
+                        {targetProperty.fields.description}
+                      </div>
+                    </div>
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                      <p className="text-sm text-gray-400 mb-2">Street Address</p>
+                      <p className="text-sm text-gray-300">{targetProperty.fields.streetAddress}</p>
+                    </div>
                   </div>
-                </div>
-
-                {/* Street Address */}
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-sm text-gray-400 mb-2">Street Address</p>
-                  <p className="text-sm text-gray-300">{targetProperty.fields.streetAddress}</p>
-                </div>
+                </details>
               </div>
             </div>
 

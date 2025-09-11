@@ -31,7 +31,7 @@ class RealEstate(sl.Schema):
     bedrooms: Optional[sl.Integer]
     buildingArea: Optional[sl.Integer]
     garageSpaces: Optional[sl.Integer]
-    levels: Optional[sl.Integer]
+    levels: Optional[sl.String]
 
     # Categorical fields
     country: Optional[sl.String]
@@ -51,7 +51,7 @@ class RealEstate(sl.Schema):
     isNewConstruction: Optional[sl.Integer]
     hasPetsAllowed: Optional[sl.Integer]
 
-    # Timestamp
+    # Timestamp (Unix timestamp as datetime)
     time: Optional[sl.Timestamp]
 
 
@@ -121,6 +121,11 @@ event_space = sl.CategoricalSimilaritySpace(
     categories=schema_data.get('event', {}).get('unique_values', ["listed for sale", "price change", "listing removed", "sold", "listed for rent", "pending sale"]),
 )
 
+levels_space = sl.CategoricalSimilaritySpace(
+    category_input=real_estate_schema.levels,
+    categories=schema_data.get('levels', {}).get('unique_values', ["0", "1", "2", "3+", "multi", "4", "other", "5+", "1.5", "2+", "2.5"]),
+)
+
 # Index
 index = sl.Index(
     spaces=[
@@ -135,6 +140,7 @@ index = sl.Index(
         living_area_space,
         home_type_space,
         event_space,
+        levels_space,
     ],
     fields=[
         real_estate_schema.id,

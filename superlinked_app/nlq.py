@@ -76,6 +76,12 @@ event_description = (
     "Do not use any other values. Use None if not specified or not matching."
 )
 
+levels_description = (
+    "Number of levels/floors in the property from the predefined list. Must be exactly one of: 0, 1, 2, 3+, multi, 4, other, 5+, 1.5, 2+, 2.5. "
+    "Map user terms to these categories: 'single level' -> '1', 'two story' -> '2', 'multi-level' -> 'multi', "
+    "'split level' -> '1.5'. Do not use any other values. Use None if not specified or not matching."
+)
+
 system_prompt = (
     "You are an expert at extracting search parameters from natural language queries for real estate properties.\n"
     "\n"
@@ -116,16 +122,17 @@ system_prompt = (
     "  \"price_per_sqft\": null,\n"
     "  \"living_area\": null,\n"
     "  \"home_type\": null,\n"
-    "  \"event\": null\n"
+    "  \"event\": null,\n"
+    "  \"levels\": null\n"
     "}\n"
     "\n"
     "EXAMPLES:\n"
     "Query: 'single family homes in los angeles under 1 million dollars'\n"
-    "Output: {\"id\": null, \"description\": null, \"city\": \"los angeles\", \"state\": null, \"county\": null, \"price\": 1000000, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"single_family\", \"event\": null}\n"
+    "Output: {\"id\": null, \"description\": null, \"city\": \"los angeles\", \"state\": null, \"county\": null, \"price\": 1000000, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"single_family\", \"event\": null, \"levels\": null}\n"
     "\n"
     "Query: 'condos in san francisco with pool'\n"
-    "Output: {\"id\": null, \"description\": \"pool\", \"city\": \"san francisco\", \"state\": null, \"county\": null, \"price\": null, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"condo\", \"event\": null}\n"
+    "Output: {\"id\": null, \"description\": \"pool\", \"city\": \"san francisco\", \"state\": null, \"county\": null, \"price\": null, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"condo\", \"event\": null, \"levels\": null}\n"
     "\n"
     "Query: 'lots in california for under 500k'\n"
-    "Output: {\"id\": null, \"description\": null, \"city\": null, \"state\": \"california\", \"county\": null, \"price\": 500000, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"lot\", \"event\": null}\n"
+    "Output: {\"id\": null, \"description\": null, \"city\": null, \"state\": \"california\", \"county\": null, \"price\": 500000, \"price_per_sqft\": null, \"living_area\": null, \"home_type\": \"lot\", \"event\": null, \"levels\": null}\n"
 )

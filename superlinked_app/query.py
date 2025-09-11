@@ -8,6 +8,7 @@ from superlinked_app.index import (
     event_space,
     home_type_space,
     index,
+    levels_space,
     living_area_space,
     price_space,
     price_per_sqft_space,
@@ -20,6 +21,7 @@ from superlinked_app.nlq import (
     description_description,
     event_description,
     home_type_description,
+    levels_description,
     living_area_description,
     openai_config,
     price_description,
@@ -32,15 +34,16 @@ query = (
     sl.Query(
         index,
         weights={
-            description_space: sl.Param("description_weight", default=1.0),  # High priority for description matches
-            city_space: sl.Param("city_weight", default=0.8),  # High priority for city matches
+            description_space: sl.Param("description_weight", default=1.0, description=description_description),  # High priority for description matches
+            city_space: sl.Param("city_weight", default=0.8, description=city_description),  # High priority for city matches
             street_address_space: sl.Param("street_address_weight", default=0.6),  # Medium priority for street address
-            county_space: sl.Param("county_weight", default=0.6),  # Medium priority for county
-            price_space: sl.Param("price_weight", default=0.5),  # Medium priority for price similarity
-            price_per_sqft_space: sl.Param("price_per_sqft_weight", default=0.4),  # Medium-low priority for price per sqft
-            living_area_space: sl.Param("living_area_weight", default=0.3),  # Low priority for living area similarity
-            home_type_space: sl.Param("home_type_weight", default=0.7),  # Medium-high for home type matching
-            event_space: sl.Param("event_weight", default=0.2),  # Low priority for event type
+            county_space: sl.Param("county_weight", default=0.6, description=county_description),  # Medium priority for county
+            price_space: sl.Param("price_weight", default=0.5, description=price_description),  # Medium priority for price similarity
+            price_per_sqft_space: sl.Param("price_per_sqft_weight", default=0.4, description=price_per_sqft_description),  # Medium-low priority for price per sqft
+            living_area_space: sl.Param("living_area_weight", default=0.3, description=living_area_description),  # Low priority for living area similarity
+            home_type_space: sl.Param("home_type_weight", default=0.7, description=home_type_description),  # Medium-high for home type matching
+            event_space: sl.Param("event_weight", default=0.2, description=event_description),  # Low priority for event type
+            levels_space: sl.Param("levels_weight", default=0.1, description=levels_description),  # Very low priority for levels
         },
     )
     .find(real_estate_schema)
@@ -48,9 +51,6 @@ query = (
     .similar(city_space, sl.Param("city", description=city_description))
     .similar(street_address_space, sl.Param("street_address"))
     .similar(county_space, sl.Param("county", description=county_description))
-    .similar(price_space, sl.Param("price", description=price_description))
-    .similar(price_per_sqft_space, sl.Param("price_per_sqft", description=price_per_sqft_description))
-    .similar(living_area_space, sl.Param("living_area", description=living_area_description))
     .similar(home_type_space, sl.Param("home_type", description=home_type_description))
     .similar(event_space, sl.Param("event", description=event_description))
 )
@@ -70,15 +70,16 @@ similar_query = (
     sl.Query(
         index,
         weights={
-            description_space: sl.Param("description_weight", default=1.0),  # High priority for description matches
-            city_space: sl.Param("city_weight", default=0.8),  # High priority for city matches
+            description_space: sl.Param("description_weight", default=1.0, description=description_description),  # High priority for description matches
+            city_space: sl.Param("city_weight", default=0.8, description=city_description),  # High priority for city matches
             street_address_space: sl.Param("street_address_weight", default=0.6),  # Medium priority for street address
-            county_space: sl.Param("county_weight", default=0.6),  # Medium priority for county
-            price_space: sl.Param("price_weight", default=0.5),  # Medium priority for price similarity
-            price_per_sqft_space: sl.Param("price_per_sqft_weight", default=0.4),  # Medium-low priority for price per sqft
-            living_area_space: sl.Param("living_area_weight", default=0.3),  # Low priority for living area similarity
-            home_type_space: sl.Param("home_type_weight", default=0.7),  # Medium-high for home type matching
-            event_space: sl.Param("event_weight", default=0.2),  # Low priority for event type
+            county_space: sl.Param("county_weight", default=0.6, description=county_description),  # Medium priority for county
+            price_space: sl.Param("price_weight", default=0.5, description=price_description),  # Medium priority for price similarity
+            price_per_sqft_space: sl.Param("price_per_sqft_weight", default=0.4, description=price_per_sqft_description),  # Medium-low priority for price per sqft
+            living_area_space: sl.Param("living_area_weight", default=0.3, description=living_area_description),  # Low priority for living area similarity
+            home_type_space: sl.Param("home_type_weight", default=0.7, description=home_type_description),  # Medium-high for home type matching
+            event_space: sl.Param("event_weight", default=0.2, description=event_description),  # Low priority for event type
+            levels_space: sl.Param("levels_weight", default=0.1, description=levels_description),  # Very low priority for levels
         },
     )
     .find(real_estate_schema)

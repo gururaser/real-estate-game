@@ -1,0 +1,2 @@
+superlinked==37.0.0
+superlinked-server==1.53.3

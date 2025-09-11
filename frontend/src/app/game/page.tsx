@@ -333,53 +333,135 @@ export default function Game() {
                 <h2 className="text-3xl font-bold text-white">Target Property</h2>
               </div>
 
-              <div className="space-y-4">
-                {/* Basic Information */}
-                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-lg">📋</span>
-                      </div>
+              {/* Property Location Map */}
+              <div className="mb-6">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mr-4">
+                    <span className="text-2xl">🗺️</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Property Location</h3>
+                </div>
+
+                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border border-slate-600">
+                  <PropertyMap
+                    latitude={targetProperty.fields.latitude}
+                    longitude={targetProperty.fields.longitude}
+                    address={targetProperty.fields.streetAddress}
+                    city={targetProperty.fields.city}
+                    state={targetProperty.fields.state}
+                  />
+                </div>
+              </div>
+
+              {/* Property Overview */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6">
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mr-4">
+                    <span className="text-xl">📋</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Property Overview</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🏙️</span>
                       <div>
-                        <h3 className="text-lg font-semibold text-white">Basic Information</h3>
-                        <p className="text-sm text-gray-400">Property location and basic structure details</p>
+                        <p className="text-sm text-gray-400">City</p>
+                        <p className="text-xl font-bold text-white">{targetProperty.fields.city}</p>
                       </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="p-4 border-t border-white/10">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">City</p>
-                        <p className="text-lg font-semibold text-white">{targetProperty.fields.city}</p>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">📍</span>
+                      <div>
+                        <p className="text-sm text-gray-400">State</p>
+                        <p className="text-xl font-bold text-white">
+                          {(targetProperty.fields.state.toLowerCase() === 'ga' ? 'Georgia' : 
+                           targetProperty.fields.state.toLowerCase() === 'ca' ? 'California' : 
+                           targetProperty.fields.state).toLowerCase()}
+                        </p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">State</p>
-                        <p className="text-lg font-semibold text-white">{targetProperty.fields.state}</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🌍</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Country</p>
+                        <p className="text-xl font-bold text-white">{targetProperty.fields.country}</p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">County</p>
-                        <p className="text-lg font-semibold text-white">{targetProperty.fields.county}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Year Built</p>
-                        <p className="text-lg font-semibold text-white">{targetProperty.fields.yearBuilt}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">ZIP Code</p>
-                        <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.zipcode}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Country</p>
-                        <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.country}</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🏛️</span>
+                      <div>
+                        <p className="text-sm text-gray-400">County</p>
+                        <p className="text-xl font-bold text-white">{targetProperty.fields.county}</p>
                       </div>
                     </div>
                   </div>
-                </details>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">📮</span>
+                      <div>
+                        <p className="text-sm text-gray-400">ZIP Code</p>
+                        <p className="text-xl font-bold text-teal-300">{targetProperty.fields.zipcode}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🏠</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Street Address</p>
+                        <p className="text-lg font-semibold text-white">{targetProperty.fields.streetAddress}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🏗️</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Year Built</p>
+                        <p className="text-xl font-bold text-cyan-300">{targetProperty.fields.yearBuilt}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">📅</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Listing Date</p>
+                        <p className="text-lg font-semibold text-violet-300">{targetProperty.fields.datePostedString}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 pt-6 border-t border-white/10">
+                  <div className="flex items-start space-x-4">
+                    <span className="text-lg font-semibold text-gray-300 mt-1">📝</span>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-400 mb-2">Description</p>
+                      <div className="text-sm text-gray-300 max-h-24 overflow-y-auto leading-relaxed custom-scrollbar bg-white/5 p-3 rounded-lg">
+                        {targetProperty.fields.description}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
+                {/* Property Location Map inside Overview */}
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <div className="flex items-center mb-4">
+                    <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mr-3">
+                      <span className="text-lg">🗺️</span>
+                    </div>
+                    <h4 className="text-xl font-bold text-white">Location Map</h4>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border border-slate-600">
+                    <PropertyMap
+                      latitude={targetProperty.fields.latitude}
+                      longitude={targetProperty.fields.longitude}
+                      address={targetProperty.fields.streetAddress}
+                      city={targetProperty.fields.city}
+                      state={targetProperty.fields.state}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 {/* Physical Features */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
                   <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
@@ -544,32 +626,6 @@ export default function Game() {
                   </div>
                 </details>
 
-                {/* Date & Time Information */}
-                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-lg">📅</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">Date & Time Information</h3>
-                        <p className="text-sm text-gray-400">Property listing date and time information</p>
-                      </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="p-4 border-t border-white/10">
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Listing Date</p>
-                        <p className="text-sm font-semibold text-violet-300">{targetProperty.fields.datePostedString}</p>
-                      </div>
-                    </div>
-                  </div>
-                </details>
-
                 {/* Descriptions */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
                   <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
@@ -599,26 +655,6 @@ export default function Game() {
                     </div>
                   </div>
                 </details>
-              </div>
-
-              {/* Property Location Map */}
-              <div className="mt-8">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mr-4">
-                    <span className="text-2xl">🗺️</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Property Location</h3>
-                </div>
-
-                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border border-slate-600">
-                  <PropertyMap
-                    latitude={targetProperty.fields.latitude}
-                    longitude={targetProperty.fields.longitude}
-                    address={targetProperty.fields.streetAddress}
-                    city={targetProperty.fields.city}
-                    state={targetProperty.fields.state}
-                  />
-                </div>
               </div>
             </div>
 

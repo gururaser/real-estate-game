@@ -138,6 +138,9 @@ if 'levels' in combined_df.columns:
 # Remove rows with any null values
 combined_df = combined_df.dropna()
 
+# Remove duplicate rows based on id column
+combined_df = combined_df.drop_duplicates(subset=['id'])
+
 # Save the new CSV file to data folder
 combined_df.to_csv('data/processed_real_estate.csv', index=False)
 

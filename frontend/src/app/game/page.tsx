@@ -264,7 +264,7 @@ export default function Game() {
 
           {/* Guess Section - Moved to top after search */}
           {hasSearched && (
-            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 mt-8">
+            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 mt-8 mb-8">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mr-4">
                   <span className="text-2xl">💰</span>

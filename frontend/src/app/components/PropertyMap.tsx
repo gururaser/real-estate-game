@@ -103,23 +103,11 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
 
   const position: [number, number] = [latitude, longitude];
 
-  // Calculate bounds to include all properties
-  const allCoordinates: [number, number][] = [position];
-  
-  if (searchResults) {
-    searchResults.forEach(property => {
-      if (property.fields.latitude && property.fields.longitude && 
-          property.fields.latitude !== 0 && property.fields.longitude !== 0) {
-        allCoordinates.push([property.fields.latitude, property.fields.longitude]);
-      }
-    });
-  }
-
   return (
     <div className="h-64 rounded-lg overflow-hidden border border-slate-600 relative">
       <MapContainer
         center={position}
-        zoom={searchResults && searchResults.length > 0 ? 8 : 15}
+        zoom={10}
         style={{ height: '100%', width: '100%' }}
         className="rounded-lg"
         zoomControl={true}
@@ -155,66 +143,6 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
             </div>
           </Popup>
         </Marker>
-
-        {/* Search Results Markers */}
-        {searchResults && searchResults.map((property, index) => {
-          // Skip if coordinates are invalid
-          if (!property.fields.latitude || !property.fields.longitude || 
-              property.fields.latitude === 0 || property.fields.longitude === 0) {
-            return null;
-          }
-
-          const searchPosition: [number, number] = [property.fields.latitude, property.fields.longitude];
-          
-          return (
-            <Marker key={property.id || index} position={searchPosition} icon={searchResultIcon}>
-              <Popup>
-                <div className="text-sm max-w-48">
-                  <div className="font-bold text-blue-600 mb-2 flex items-center">
-                    <span className="text-lg mr-1">🔍</span>
-                    Similar Property
-                  </div>
-                  
-                  <div className="mb-2">
-                    <div className="font-bold text-green-600 text-lg">
-                      ${property.fields.price.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      ${property.fields.pricePerSquareFoot.toFixed(0)}/sq ft
-                    </div>
-                  </div>
-
-                  {property.fields.streetAddress && (
-                    <div className="mb-2 text-gray-700">
-                      <div className="font-medium">Address:</div>
-                      <div className="text-xs">{property.fields.streetAddress}</div>
-                    </div>
-                  )}
-                  
-                  {property.fields.city && property.fields.state && (
-                    <div className="mb-2 text-gray-700">
-                      <div className="font-medium">Location:</div>
-                      <div className="text-xs">{property.fields.city}, {property.fields.state}</div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div className="text-xs">
-                      <span className="font-medium">🏠</span> {property.fields.bedrooms} bed
-                    </div>
-                    <div className="text-xs">
-                      <span className="font-medium">🛁</span> {property.fields.bathrooms} bath
-                    </div>
-                  </div>
-
-                  <div className="text-xs text-gray-500 border-t pt-2 mt-2">
-                    📍 {property.fields.latitude.toFixed(6)}, {property.fields.longitude.toFixed(6)}
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
       </MapContainer>
 
       {/* Coordinates overlay */}

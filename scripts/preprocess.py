@@ -38,9 +38,37 @@ for col in float_cols:
 if 'livingAreaValue' in combined_df.columns and combined_df['livingAreaValue'].dtype == 'float64':
     combined_df['livingAreaValue'] = combined_df['livingAreaValue'].fillna(0).round().astype('Int64')
 
+# Additionally, convert zipcode to integer (as requested)
+if 'zipcode' in combined_df.columns and combined_df['zipcode'].dtype == 'float64':
+    combined_df['zipcode'] = combined_df['zipcode'].fillna(0).round().astype('Int64')
+
 # Convert time column from milliseconds to seconds for timestamp
 if 'time' in combined_df.columns:
     combined_df['time'] = combined_df['time'] // 1000  # Convert milliseconds to seconds
+
+    # If time is null but datePostedString exists, convert datePostedString to timestamp
+    if 'datePostedString' in combined_df.columns:
+        # Create mask for null time values
+        null_time_mask = combined_df['time'].isnull()
+
+        # Convert datePostedString to datetime, then to timestamp
+        combined_df.loc[null_time_mask, 'time'] = pd.to_datetime(
+            combined_df.loc[null_time_mask, 'datePostedString'],
+            errors='coerce'
+        ).astype('int64') // 10**9  # Convert to Unix timestamp (seconds)
+
+    # Fill any remaining null values with January 1, 2021 timestamp
+    combined_df['time'] = combined_df['time'].fillna(1609459200).astype(int)
+
+# If datePostedString is null but time exists, convert time to date string
+if 'datePostedString' in combined_df.columns and 'time' in combined_df.columns:
+    null_date_mask = combined_df['datePostedString'].isnull()
+    combined_df.loc[null_date_mask, 'datePostedString'] = pd.to_datetime(
+        combined_df.loc[null_date_mask, 'time'], unit='s', errors='coerce'
+    ).dt.strftime('%Y-%m-%d')
+
+    # Remove any new null values after filling
+    combined_df = combined_df.dropna()
 
 # Normalize text-based columns to lowercase
 text_cols = combined_df.select_dtypes(include=['object']).columns
@@ -106,6 +134,9 @@ def normalize_levels(level):
 
 if 'levels' in combined_df.columns:
     combined_df['levels'] = combined_df['levels'].apply(normalize_levels)
+
+# Remove rows with any null values
+combined_df = combined_df.dropna()
 
 # Save the new CSV file to data folder
 combined_df.to_csv('data/processed_real_estate.csv', index=False)

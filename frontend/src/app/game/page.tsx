@@ -74,6 +74,14 @@ export default function Game() {
 
   console.log('Game component state initialized');
 
+  // Helper function to format home type
+  const formatHomeType = (homeType: string) => {
+    return homeType
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
     console.log('useEffect triggered');
     fetchRandomProperty();
@@ -333,26 +341,6 @@ export default function Game() {
                 <h2 className="text-3xl font-bold text-white">Target Property</h2>
               </div>
 
-              {/* Property Location Map */}
-              <div className="mb-6">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mr-4">
-                    <span className="text-2xl">🗺️</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Property Location</h3>
-                </div>
-
-                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border border-slate-600">
-                  <PropertyMap
-                    latitude={targetProperty.fields.latitude}
-                    longitude={targetProperty.fields.longitude}
-                    address={targetProperty.fields.streetAddress}
-                    city={targetProperty.fields.city}
-                    state={targetProperty.fields.state}
-                  />
-                </div>
-              </div>
-
               {/* Property Overview */}
               <div className="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6">
                 <div className="flex items-center mb-6">
@@ -433,7 +421,7 @@ export default function Game() {
                     <span className="text-lg font-semibold text-gray-300 mt-1">📝</span>
                     <div className="flex-1">
                       <p className="text-sm text-gray-400 mb-2">Description</p>
-                      <div className="text-sm text-gray-300 max-h-24 overflow-y-auto leading-relaxed custom-scrollbar bg-white/5 p-3 rounded-lg">
+                      <div className="text-sm text-gray-300 max-h-32 overflow-y-auto leading-relaxed custom-scrollbar bg-white/5 p-3 rounded-lg">
                         {targetProperty.fields.description}
                       </div>
                     </div>
@@ -505,7 +493,7 @@ export default function Game() {
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Home Type</p>
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                          {targetProperty.fields.homeType}
+                          {formatHomeType(targetProperty.fields.homeType)}
                         </span>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
@@ -545,10 +533,6 @@ export default function Game() {
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Parking</p>
                         <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.parking}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Garage</p>
-                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.hasGarage ? 'Yes' : 'No'}</p>
                       </div>
                     </div>
                   </div>
@@ -622,36 +606,6 @@ export default function Game() {
                         <p className="text-sm text-gray-400 mb-1">Event Type</p>
                         <p className="text-lg font-semibold text-violet-300">{targetProperty.fields.event}</p>
                       </div>
-                    </div>
-                  </div>
-                </details>
-
-                {/* Descriptions */}
-                <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-gray-500 to-slate-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-lg">📝</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">Descriptions</h3>
-                        <p className="text-sm text-gray-400">Property detailed description and address information</p>
-                      </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="p-4 border-t border-white/10 space-y-4">
-                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                      <p className="text-sm text-gray-400 mb-2">Property Description</p>
-                      <div className="text-sm text-gray-300 max-h-32 overflow-y-auto leading-relaxed custom-scrollbar">
-                        {targetProperty.fields.description}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                      <p className="text-sm text-gray-400 mb-2">Street Address</p>
-                      <p className="text-sm text-gray-300">{targetProperty.fields.streetAddress}</p>
                     </div>
                   </div>
                 </details>
@@ -735,7 +689,7 @@ export default function Game() {
                           <div className="space-y-3">
                             <div className="flex items-center space-x-4">
                               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                                {entry.fields.homeType}
+                                {formatHomeType(entry.fields.homeType)}
                               </span>
                             </div>
 
@@ -836,10 +790,6 @@ export default function Game() {
 
           {/* Property Map Section */}
                     </div>
-
-          {/* Search Section */}
-          <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300">
-        </div>
       </div>
     </div>
   );

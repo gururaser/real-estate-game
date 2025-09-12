@@ -250,6 +250,39 @@ export default function Game() {
 
       <div className="relative z-10 p-4">
         <div className="max-w-7xl mx-auto">
+          {/* Game Instructions */}
+          <div className="backdrop-blur-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl p-6 shadow-2xl border border-white/20 mb-8">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mr-4">
+                <span className="text-3xl">🎯</span>
+              </div>
+              <h1 className="text-4xl font-bold text-white">Real Estate Price Guessing Game</h1>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/10 rounded-2xl p-4 border border-white/20">
+                <div className="flex items-center mb-3">
+                  <span className="text-2xl mr-3">🏠</span>
+                  <h3 className="text-lg font-semibold text-white">Step 1: Explore</h3>
+                </div>
+                <p className="text-sm text-gray-300">Discover property details, location, and features to understand its value</p>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-4 border border-white/20">
+                <div className="flex items-center mb-3">
+                  <span className="text-2xl mr-3">🔍</span>
+                  <h3 className="text-lg font-semibold text-white">Step 2: Research</h3>
+                </div>
+                <p className="text-sm text-gray-300">Search for similar properties to get market insights and price comparisons</p>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-4 border border-white/20">
+                <div className="flex items-center mb-3">
+                  <span className="text-2xl mr-3">💰</span>
+                  <h3 className="text-lg font-semibold text-white">Step 3: Guess</h3>
+                </div>
+                <p className="text-sm text-gray-300">Make your best price estimate! Get within 10% of the actual price to win</p>
+              </div>
+            </div>
+          </div>
+
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <Link
@@ -272,14 +305,17 @@ export default function Game() {
 
           {/* Guess Section - Moved to top after search */}
           {hasSearched && (
-            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 mt-8 mb-8">
+            <div className="backdrop-blur-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-3xl p-8 shadow-2xl border-2 border-yellow-400/50 hover:bg-yellow-500/25 transition-all duration-300 mt-8 mb-8">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mr-4">
-                  <span className="text-2xl">💰</span>
+                <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-3xl flex items-center justify-center mr-6 animate-pulse">
+                  <span className="text-4xl">🎯</span>
                 </div>
-                <h2 className="text-3xl font-bold text-white">Your Price Guess</h2>
-                <div className="ml-auto text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
-                  Based on {searchResults?.entries?.length || 0} similar properties
+                <div>
+                  <h2 className="text-4xl font-bold text-white mb-2">🎯 Your Price Guess</h2>
+                  <p className="text-lg text-yellow-200 font-medium">Can you guess the property's value within 10% accuracy?</p>
+                </div>
+                <div className="ml-auto text-sm text-gray-400 bg-white/10 px-4 py-2 rounded-full border border-yellow-400/30">
+                  <span className="text-yellow-300 font-semibold">Based on {searchResults?.entries?.length || 0} similar properties</span>
                 </div>
               </div>
 
@@ -306,26 +342,39 @@ export default function Game() {
 
               {/* Game Result */}
               {gameResult && (
-                <div className={`mt-6 p-6 rounded-2xl shadow-lg border-l-4 backdrop-blur-xl transition-all duration-300 ${
+                <div className={`mt-6 p-8 rounded-2xl shadow-lg border-l-4 backdrop-blur-xl transition-all duration-300 ${
                   gameResult.success
                     ? 'bg-green-500/10 border-green-400 text-green-300'
                     : 'bg-red-500/10 border-red-400 text-red-300'
                 }`}>
                   <div className="flex items-center mb-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 ${
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${
                       gameResult.success
                         ? 'bg-gradient-to-r from-green-500 to-emerald-500'
                         : 'bg-gradient-to-r from-red-500 to-pink-500'
                     }`}>
-                      <span className="text-xl">{gameResult.success ? '🎉' : '😞'}</span>
+                      <span className="text-2xl">{gameResult.success ? '🎉' : '�'}</span>
                     </div>
-                    <h3 className="text-2xl font-bold">
-                      {gameResult.success ? 'Congratulations! 🎉' : 'Sorry 😞'}
-                    </h3>
+                    <div>
+                      <h3 className="text-3xl font-bold">
+                        {gameResult.success ? '🎉 Congratulations! You Won!' : '💪 Keep Trying!'}
+                      </h3>
+                      <p className="text-lg text-gray-300 mt-1">
+                        {gameResult.success ? 'Amazing guess! You\'re a real estate expert!' : 'Great effort! Try again with more research.'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-lg leading-relaxed">
-                    {gameResult.message}
-                  </p>
+                  <div className="bg-white/10 rounded-xl p-4 border border-white/20">
+                    <p className="text-xl leading-relaxed font-medium">
+                      {gameResult.message}
+                    </p>
+                    {gameResult.success && (
+                      <div className="mt-4 flex items-center text-green-300">
+                        <span className="text-2xl mr-2">🏆</span>
+                        <span className="text-lg font-semibold">Perfect! You guessed within 10% of the actual price!</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -338,7 +387,10 @@ export default function Game() {
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4">
                   <span className="text-2xl">🏠</span>
                 </div>
-                <h2 className="text-3xl font-bold text-white">Target Property</h2>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">Target Property</h2>
+                  <p className="text-sm text-gray-400 mt-1">Study this property carefully to estimate its market value</p>
+                </div>
               </div>
 
               {/* Property Overview */}
@@ -352,6 +404,13 @@ export default function Game() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">💰</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Property Price</p>
+                        <p className="text-2xl font-bold text-yellow-400 animate-pulse">????</p>
+                      </div>
+                    </div>
                     <div className="flex items-center space-x-4">
                       <span className="text-lg font-semibold text-gray-300">🏙️</span>
                       <div>
@@ -386,6 +445,13 @@ export default function Game() {
                     </div>
                   </div>
                   <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-lg font-semibold text-gray-300">🎯</span>
+                      <div>
+                        <p className="text-sm text-gray-400">Your Mission</p>
+                        <p className="text-lg font-bold text-orange-400">Make Your Guess!</p>
+                      </div>
+                    </div>
                     <div className="flex items-center space-x-4">
                       <span className="text-lg font-semibold text-gray-300">📮</span>
                       <div>
@@ -618,7 +684,10 @@ export default function Game() {
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mr-4">
                   <span className="text-2xl">🔍</span>
                 </div>
-                <h2 className="text-3xl font-bold text-white">Natural Language Search</h2>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">Market Research</h2>
+                  <p className="text-sm text-gray-400 mt-1">Find similar properties to understand market value and make informed guesses</p>
+                </div>
               </div>
 
               <div className="space-y-6">

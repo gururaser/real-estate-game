@@ -527,6 +527,7 @@ export default function Game() {
                       address={targetProperty.fields.streetAddress}
                       city={targetProperty.fields.city}
                       state={targetProperty.fields.state}
+                      searchResults={searchResults?.entries || []}
                     />
                   </div>
                 </div>
@@ -773,6 +774,18 @@ export default function Game() {
                               <p className="text-gray-300 text-sm">
                                 <span className="text-gray-400">🏠</span> {entry.fields.streetAddress}
                               </p>
+                              
+                              {/* Mini Location Map */}
+                              <div className="mt-3 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-2 border border-slate-600">
+                                <PropertyMap
+                                  latitude={entry.fields.latitude}
+                                  longitude={entry.fields.longitude}
+                                  address={entry.fields.streetAddress}
+                                  city={entry.fields.city}
+                                  state={entry.fields.state}
+                                  height="h-32"
+                                />
+                              </div>
                             </div>
                           </div>
 

@@ -86,13 +86,14 @@ interface PropertyMapProps {
   city?: string;
   state?: string;
   searchResults?: Property[];
+  height?: string; // Optional height prop for different sizes
 }
 
-export default function PropertyMap({ latitude, longitude, address, city, state, searchResults }: PropertyMapProps) {
+export default function PropertyMap({ latitude, longitude, address, city, state, searchResults, height = "h-64" }: PropertyMapProps) {
   // Validate coordinates
   if (!latitude || !longitude || latitude === 0 || longitude === 0) {
     return (
-      <div className="flex items-center justify-center h-64 bg-slate-600/50 rounded-lg">
+      <div className={`flex items-center justify-center ${height} bg-slate-600/50 rounded-lg`}>
         <div className="text-center">
           <div className="text-2xl mb-2">📍</div>
           <p className="text-sm text-gray-400">Location coordinates not available</p>
@@ -104,7 +105,7 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
   const position: [number, number] = [latitude, longitude];
 
   return (
-    <div className="h-64 rounded-lg overflow-hidden border border-slate-600 relative">
+    <div className={`${height} rounded-lg overflow-hidden border border-slate-600 relative`}>
       <MapContainer
         center={position}
         zoom={10}
@@ -116,6 +117,43 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* Search Results Markers */}
+        {searchResults && searchResults.map((property, index) => (
+          <Marker 
+            key={index}
+            position={[property.fields.latitude, property.fields.longitude]} 
+            icon={searchResultIcon}
+          >
+            <Popup>
+              <div className="text-sm max-w-48">
+                <div className="font-bold text-blue-600 mb-2 flex items-center">
+                  <span className="text-lg mr-1">🔍</span>
+                  Search Result
+                </div>
+                <div className="mb-2 text-gray-700">
+                  <div className="font-medium">Price:</div>
+                  <div className="text-lg font-bold text-green-600">${property.fields.price.toLocaleString()}</div>
+                </div>
+                {property.fields.streetAddress && (
+                  <div className="mb-2 text-gray-700">
+                    <div className="font-medium">Address:</div>
+                    <div className="text-xs">{property.fields.streetAddress}</div>
+                  </div>
+                )}
+                {property.fields.city && property.fields.state && (
+                  <div className="mb-2 text-gray-700">
+                    <div className="font-medium">Location:</div>
+                    <div className="text-xs">{property.fields.city}, {property.fields.state}</div>
+                  </div>
+                )}
+                <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+                  📍 Coordinates: {property.fields.latitude.toFixed(6)}, {property.fields.longitude.toFixed(6)}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
         
         {/* Target Property Marker */}
         <Marker position={position} icon={targetIcon}>

@@ -74,6 +74,7 @@ export default function Game() {
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   console.log('Game component state initialized');
 
@@ -84,6 +85,46 @@ export default function Game() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
+
+  // Get random loading message for search
+  const getRandomLoadingMessage = () => {
+    const messages = [
+      "🧠 Processing natural language query...",
+      "✨ Extracting search filters from your description...",
+      "🏠 Finding properties that match your criteria...",
+      "✨ Analyzing property features and characteristics...",
+      "✨ Matching your preferences with available listings...",
+      "✨ Understanding your ideal property requirements...",
+      "🔬 Applying intelligent filtering algorithms...",
+      "✨ Ranking properties by relevance and quality...",
+      "🏡 Discovering the perfect property match...",
+      "✨ Using AI to find your dream home..."
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  };
+
+  // Update loading message periodically when loading
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (loading) {
+      // Set initial message
+      setLoadingMessage(getRandomLoadingMessage());
+      
+      // Change message every 1.5 seconds
+      interval = setInterval(() => {
+        setLoadingMessage(getRandomLoadingMessage());
+      }, 1500);
+    } else {
+      setLoadingMessage('');
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [loading]);
 
   useEffect(() => {
     console.log('useEffect triggered');
@@ -872,7 +913,7 @@ export default function Game() {
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
-                      Searching...
+                      {loadingMessage}
                     </div>
                   ) : (
                     '🔍 Search'

@@ -503,6 +503,18 @@ export default function Game() {
                     <h4 className="text-xl font-bold text-white">Location Map</h4>
                   </div>
 
+                  {/* Coordinates Display */}
+                  <div className="mb-4 grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+                      <p className="text-sm text-gray-400 mb-1">Latitude</p>
+                      <p className="text-lg font-semibold text-emerald-300">{targetProperty.fields.latitude.toFixed(6)}</p>
+                    </div>
+                    <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+                      <p className="text-sm text-gray-400 mb-1">Longitude</p>
+                      <p className="text-lg font-semibold text-teal-300">{targetProperty.fields.longitude.toFixed(6)}</p>
+                    </div>
+                  </div>
+
                   <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg p-4 border border-slate-600">
                     <PropertyMap
                       latitude={targetProperty.fields.latitude}

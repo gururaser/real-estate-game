@@ -26,7 +26,6 @@ class RealEstate(sl.Schema):
     longitude: Optional[sl.Float]
     latitude: Optional[sl.Float]
     livingArea: Optional[sl.Integer]
-    livingAreaValue: Optional[sl.Float]
     bathrooms: Optional[sl.Integer]
     bedrooms: Optional[sl.Integer]
     buildingArea: Optional[sl.Integer]
@@ -159,7 +158,6 @@ index = sl.Index(
         real_estate_schema.longitude,
         real_estate_schema.latitude,
         real_estate_schema.livingArea,
-        real_estate_schema.livingAreaValue,
         real_estate_schema.bathrooms,
         real_estate_schema.bedrooms,
         real_estate_schema.buildingArea,

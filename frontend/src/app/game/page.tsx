@@ -19,6 +19,7 @@ const PropertyMap = dynamic(() => import('../components/PropertyMap'), {
 
 interface Property {
   id: string;
+  realId: string; // Real ID from Superlinked schema
   fields: {
     description: string;
     streetAddress: string;
@@ -120,8 +121,12 @@ export default function Game() {
         const point = data.result.points[0];
         console.log('Point data:', point);
         // Transform payload to match expected format
+        const originalEntityId = point.payload['__original_entity_id__'] || '';
+        const realId = originalEntityId.replace('RealEstate:', '');
+        
         const transformedProperty = {
           id: point.id,
+          realId: realId, // Real ID from Superlinked schema
           fields: {
             description: point.payload['__schema_field__RealEstate_description'] || '',
             streetAddress: point.payload['__schema_field__RealEstate_streetAddress'] || '',
@@ -182,7 +187,7 @@ export default function Game() {
         body: JSON.stringify({
           natural_query: searchQuery.toLowerCase(),
           limit: 5,
-          ids_exclude: [targetProperty.id],
+          ids_exclude: [targetProperty.realId],
         }),
       });
       const data = await response.json();
@@ -287,7 +292,7 @@ export default function Game() {
           <div className="flex justify-between items-center mb-8">
             <Link
               href="/"
-              className="group inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-2xl border border-white/20 transition-all duration-300 hover:scale-105"
+              className="group inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-2xl border border-white/20 transition-all duration-500 ease-out hover:scale-105"
             >
               <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -296,7 +301,7 @@ export default function Game() {
             </Link>
             <button
               onClick={resetGame}
-              className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+              className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105"
             >
               <span className="mr-2">🔄</span>
               New Game
@@ -305,7 +310,7 @@ export default function Game() {
 
           {/* Guess Section - Moved to top after search */}
           {hasSearched && (
-            <div className="backdrop-blur-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-3xl p-8 shadow-2xl border-2 border-yellow-400/50 hover:bg-yellow-500/25 transition-all duration-300 mt-8 mb-8">
+            <div className="backdrop-blur-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-3xl p-8 shadow-2xl border-2 border-yellow-400/50 hover:bg-yellow-500/25 transition-all duration-500 ease-out mt-8 mb-8 animate-in slide-in-from-top-4 fade-in duration-700">
               <div className="flex items-center mb-6">
                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-3xl flex items-center justify-center mr-6 animate-pulse">
                   <span className="text-4xl">🎯</span>
@@ -326,7 +331,7 @@ export default function Game() {
                     value={userGuess}
                     onChange={(e) => setUserGuess(e.target.value)}
                     placeholder="E.g: 250000"
-                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-300"
+                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-500 ease-out"
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                     <span className="text-gray-400 text-sm">$</span>
@@ -334,7 +339,7 @@ export default function Game() {
                 </div>
                 <button
                   onClick={handleGuess}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 whitespace-nowrap"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-500 ease-out hover:scale-105 whitespace-nowrap"
                 >
                   🎯 Make Guess
                 </button>
@@ -342,7 +347,7 @@ export default function Game() {
 
               {/* Game Result */}
               {gameResult && (
-                <div className={`mt-6 p-8 rounded-2xl shadow-lg border-l-4 backdrop-blur-xl transition-all duration-300 ${
+                <div className={`mt-6 p-8 rounded-2xl shadow-lg border-l-4 backdrop-blur-xl transition-all duration-500 ease-out animate-in slide-in-from-right-4 fade-in duration-700 ${
                   gameResult.success
                     ? 'bg-green-500/10 border-green-400 text-green-300'
                     : 'bg-red-500/10 border-red-400 text-red-300'
@@ -382,7 +387,7 @@ export default function Game() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Target Property */}
-            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300">
+            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-500 ease-out hover:shadow-2xl hover:shadow-purple-500/10">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4">
                   <span className="text-2xl">🏠</span>
@@ -530,7 +535,7 @@ export default function Game() {
               <div className="space-y-4">
                 {/* Physical Features */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-lg">🏠</span>
@@ -584,7 +589,7 @@ export default function Game() {
 
                 {/* Garage & Parking */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-lg">🚗</span>
@@ -618,7 +623,7 @@ export default function Game() {
 
                 {/* Amenities */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-lg">🏊</span>
@@ -652,7 +657,7 @@ export default function Game() {
 
                 {/* Property Status */}
                 <details className="group bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-300 flex items-center justify-between">
+                  <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-lg">🏦</span>
@@ -691,7 +696,7 @@ export default function Game() {
             </div>
 
             {/* Search Section */}
-            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300">
+            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-500 ease-out hover:shadow-2xl hover:shadow-blue-500/10">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mr-4">
                   <span className="text-2xl">🔍</span>
@@ -709,7 +714,7 @@ export default function Game() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="E.g: A cheap house in California"
-                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-500 ease-out"
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                     <span className="text-gray-400 text-sm">💭</span>
@@ -719,7 +724,7 @@ export default function Game() {
                 <button
                   onClick={handleSearch}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-2xl font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-2xl font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
@@ -733,7 +738,7 @@ export default function Game() {
               </div>
 
               {searchResults && (
-                <div className="mt-8">
+                <div className="mt-8 animate-in slide-in-from-left-4 fade-in duration-700">
                   <div className="flex items-center mb-6">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3">
                       <span className="text-xl">📊</span>
@@ -743,7 +748,11 @@ export default function Game() {
 
                   <div className="space-y-4">
                     {searchResults.entries.map((entry, index) => (
-                      <div key={index} className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-102">
+                      <div 
+                        key={index} 
+                        className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 ease-out hover:scale-102 animate-in slide-in-from-bottom-4 fade-in duration-700"
+                        style={{ animationDelay: `${index * 150}ms` }}
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
@@ -799,7 +808,7 @@ export default function Game() {
 
                         <div className="mt-6 pt-4 border-t border-white/10">
                           <details className="group">
-                            <summary className="cursor-pointer text-gray-300 hover:text-white font-medium flex items-center justify-between transition-colors">
+                            <summary className="cursor-pointer text-gray-300 hover:text-white font-medium flex items-center justify-between transition-all duration-500 ease-out">
                               <span>More Information</span>
                               <svg className="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -838,7 +847,7 @@ export default function Game() {
                   <div className="mt-6">
                     <button
                       onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center justify-between w-full p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all duration-300 group"
+                      className="flex items-center justify-between w-full p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all duration-500 ease-out group"
                     >
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-3">

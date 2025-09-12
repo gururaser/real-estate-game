@@ -72,7 +72,6 @@ export default function Game() {
   const [gameResult, setGameResult] = useState<{ success: boolean; medal?: 'gold' | 'silver' | 'bronze'; message: string; guess?: number; actualPrice?: number; deviation?: number } | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
 
@@ -243,6 +242,7 @@ export default function Game() {
       });
       const data = await response.json();
       setSearchResults(data);
+      console.log('Applied Filters JSON:', data.metadata.search_params);
       setHasSearched(true);
     } catch (error) {
       console.error('Error searching properties:', error);
@@ -634,10 +634,12 @@ export default function Game() {
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-4">
-                      <span className="text-lg font-semibold text-gray-300">🎯</span>
+                      <span className="text-lg font-semibold text-gray-300">🏠</span>
                       <div>
-                        <p className="text-sm text-gray-400">Your Mission</p>
-                        <p className="text-lg font-bold text-orange-400">Predict the price!</p>
+                        <p className="text-sm text-gray-400">Home Type</p>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                          {formatHomeType(targetProperty.fields.homeType)}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -756,12 +758,6 @@ export default function Game() {
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Levels</p>
                         <p className="text-lg font-semibold text-orange-300">{targetProperty.fields.levels === '' ? 'Unknown' : targetProperty.fields.levels}</p>
-                      </div>
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Home Type</p>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                          {formatHomeType(targetProperty.fields.homeType)}
-                        </span>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Lot Area Units</p>
@@ -923,6 +919,177 @@ export default function Game() {
 
               {searchResults && (
                 <div className="mt-8 animate-in slide-in-from-left-4 fade-in duration-700">
+                  {/* Applied Filters */}
+                  <details className="group mb-8 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                    <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3">
+                          <span className="text-xl">🔧</span>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">Applied Filters</h3>
+                          <p className="text-sm text-blue-200">Search parameters used for this query</p>
+                        </div>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-400 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <div className="p-4 border-t border-white/10">
+                      {(() => {
+                        const filters = [
+                          { key: 'state_filter', label: 'State', value: searchResults.metadata.search_params?.state_filter, icon: '🏛️' },
+                          { key: 'city_filter', label: 'City', value: searchResults.metadata.search_params?.city_filter, icon: '🏙️' },
+                          { key: 'county_filter', label: 'County', value: searchResults.metadata.search_params?.county_filter, icon: '🏛️' },
+                          { key: 'home_type_filter', label: 'Home Type', value: searchResults.metadata.search_params?.home_type_filter, icon: '🏠' },
+                          { key: 'event_filter', label: 'Event', value: searchResults.metadata.search_params?.event_filter, icon: '📢' },
+                          { key: 'is_bank_owned_filter', label: 'Bank Owned', value: searchResults.metadata.search_params?.is_bank_owned_filter, icon: '🏦' },
+                          { key: 'is_for_auction_filter', label: 'Auction', value: searchResults.metadata.search_params?.is_for_auction_filter, icon: '🔨' },
+                          { key: 'parking_filter', label: 'Parking', value: searchResults.metadata.search_params?.parking_filter, icon: '🚗' },
+                          { key: 'has_garage_filter', label: 'Garage', value: searchResults.metadata.search_params?.has_garage_filter, icon: '🏭' },
+                          { key: 'pool_filter', label: 'Pool', value: searchResults.metadata.search_params?.pool_filter, icon: '🏊' },
+                          { key: 'spa_filter', label: 'Spa', value: searchResults.metadata.search_params?.spa_filter, icon: '🛁' },
+                          { key: 'is_new_construction_filter', label: 'New Construction', value: searchResults.metadata.search_params?.is_new_construction_filter, icon: '🔨' },
+                          { key: 'has_pets_allowed_filter', label: 'Pets Allowed', value: searchResults.metadata.search_params?.has_pets_allowed_filter, icon: '🐾' },
+                          { key: 'max_price', label: 'Max Price', value: searchResults.metadata.search_params?.max_price, icon: '💰' },
+                          { key: 'min_price', label: 'Min Price', value: searchResults.metadata.search_params?.min_price, icon: '💰' },
+                          { key: 'max_bedrooms', label: 'Max Bedrooms', value: searchResults.metadata.search_params?.max_bedrooms, icon: '🛏️' },
+                          { key: 'min_bedrooms', label: 'Min Bedrooms', value: searchResults.metadata.search_params?.min_bedrooms, icon: '🛏️' },
+                          { key: 'max_bathrooms', label: 'Max Bathrooms', value: searchResults.metadata.search_params?.max_bathrooms, icon: '🛁' },
+                          { key: 'min_bathrooms', label: 'Min Bathrooms', value: searchResults.metadata.search_params?.min_bathrooms, icon: '🛁' },
+                          { key: 'max_living_area', label: 'Max Living Area', value: searchResults.metadata.search_params?.max_living_area, icon: '📐' },
+                          { key: 'min_living_area', label: 'Min Living Area', value: searchResults.metadata.search_params?.min_living_area, icon: '📐' },
+                        ].filter(filter => filter.value !== null && filter.value !== undefined && filter.value !== '');
+
+                        return filters.length > 0 ? (
+                          <div className="space-y-6">
+                            {/* Location & Property Type Filters */}
+                            {filters.some(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter'].includes(f.key)) && (
+                              <div className="space-y-4">
+                                <div className="flex items-center mb-4">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                                    <span className="text-lg">📍</span>
+                                  </div>
+                                  <h4 className="text-lg font-semibold text-white">Location & Type</h4>
+                                </div>
+
+                                <div className="space-y-3">
+                                  {filters.filter(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter'].includes(f.key)).map((filter) => (
+                                    <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                      <div className="flex items-center">
+                                        <span className="text-lg mr-3">{filter.icon}</span>
+                                        <span className="text-sm text-gray-300">{filter.label}</span>
+                                      </div>
+                                      <div className="text-sm font-semibold text-white">
+                                        {Array.isArray(filter.value) ? (
+                                          <div className="flex flex-wrap gap-1">
+                                            {filter.value.map((item, idx) => (
+                                              <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                                                {item}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <span className="text-cyan-300">
+                                            {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Features & Amenities Filters */}
+                            {filters.some(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)) && (
+                              <div className="space-y-4">
+                                <div className="flex items-center mb-4">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                                    <span className="text-lg">🏠</span>
+                                  </div>
+                                  <h4 className="text-lg font-semibold text-white">Features & Amenities</h4>
+                                </div>
+
+                                <div className="space-y-3">
+                                  {filters.filter(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)).map((filter) => (
+                                    <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                      <div className="flex items-center">
+                                        <span className="text-lg mr-3">{filter.icon}</span>
+                                        <span className="text-sm text-gray-300">{filter.label}</span>
+                                      </div>
+                                      <div className="text-sm font-semibold text-white">
+                                        {Array.isArray(filter.value) ? (
+                                          <div className="flex flex-wrap gap-1">
+                                            {filter.value.map((item, idx) => (
+                                              <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                                                {item}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <span className="text-emerald-300">
+                                            {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Price & Size Filters */}
+                            {filters.some(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)) && (
+                              <div className="space-y-4">
+                                <div className="flex items-center mb-4">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                                    <span className="text-lg">📊</span>
+                                  </div>
+                                  <h4 className="text-lg font-semibold text-white">Price & Size Ranges</h4>
+                                </div>
+
+                                <div className="space-y-3">
+                                  {filters.filter(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)).map((filter) => (
+                                    <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                      <div className="flex items-center">
+                                        <span className="text-lg mr-3">{filter.icon}</span>
+                                        <span className="text-sm text-gray-300">{filter.label}</span>
+                                      </div>
+                                      <div className="text-sm font-semibold text-white">
+                                        {Array.isArray(filter.value) ? (
+                                          <div className="flex flex-wrap gap-1">
+                                            {filter.value.map((item, idx) => (
+                                              <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                                                {item}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <span className="text-pink-300">
+                                            {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-12">
+                            <div className="w-16 h-16 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <span className="text-3xl">🔍</span>
+                            </div>
+                            <h4 className="text-xl font-semibold text-gray-300 mb-2">No Filters Applied</h4>
+                            <p className="text-gray-400">This search used natural language processing without specific filters</p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </details>
+
                   <div className="flex items-center mb-6">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3">
                       <span className="text-xl">📊</span>
@@ -1040,35 +1207,7 @@ export default function Game() {
                     ))}
                   </div>
 
-                  <div className="mt-6">
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center justify-between w-full p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all duration-500 ease-out group"
-                    >
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-3">
-                          <span className="text-lg">⚙️</span>
-                        </div>
-                        <h4 className="text-lg font-semibold text-white">Applied Filters</h4>
-                      </div>
-                      <svg
-                        className={`w-5 h-5 text-gray-400 transform transition-transform ${showFilters ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
 
-                    {showFilters && (
-                      <div className="mt-4 bg-white/5 rounded-2xl p-4 border border-white/10">
-                        <pre className="text-xs text-gray-300 bg-black/20 p-3 rounded-xl overflow-x-auto border border-white/10">
-                          {JSON.stringify(searchResults.metadata.search_params, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>

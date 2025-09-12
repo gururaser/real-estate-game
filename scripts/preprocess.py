@@ -139,26 +139,17 @@ if 'levels' in combined_df.columns:
 
 # Fill missing numerical values with city median
 numeric_cols = combined_df.select_dtypes(include=[np.number]).columns
-exclude_cols = ['longitude', 'latitude', 'time']  # Exclude columns that shouldn't use median
+exclude_cols = ['longitude', 'latitude', 'time', 'price']  # Exclude columns that shouldn't use median
 for col in numeric_cols:
     if col not in exclude_cols:
         combined_df[col] = combined_df.groupby('city')[col].transform(lambda x: x.fillna(x.median()))
 
-# Special handling for price: replace 0 values with state median
+# Drop rows where price is 0 or null
 if 'price' in combined_df.columns:
-    # Calculate state median for price (excluding 0 values)
-    state_median_price = combined_df[combined_df['price'] != 0].groupby('state')['price'].median()
-    
-    # Replace 0 values with state median
-    def replace_zero_price(row):
-        if row['price'] == 0:
-            return state_median_price.get(row['state'], row['price'])
-        return row['price']
-    
-    combined_df['price'] = combined_df.apply(replace_zero_price, axis=1)
-    
-    # Fill any remaining NaN in price with state median
-    combined_df['price'] = combined_df.groupby('state')['price'].transform(lambda x: x.fillna(x.median()))
+    initial_count = len(combined_df)
+    combined_df = combined_df[(combined_df['price'] != 0) & (combined_df['price'].notnull())]
+    removed_count = initial_count - len(combined_df)
+    print(f"Removed {removed_count} rows with price 0 or null")
 
 # Remove duplicate rows based on id column
 combined_df = combined_df.drop_duplicates(subset=['id'])

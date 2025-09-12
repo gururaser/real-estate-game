@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import numpy as np
 
 # Read CSV files
 california_df = pd.read_csv('data/RealEstate_California.csv')
@@ -26,6 +27,11 @@ if 'hasBadGeocode' in combined_df.columns:
 if 'Unnamed: 0' in combined_df.columns:
     combined_df = combined_df.drop(columns=['Unnamed: 0'])
 
+# Drop 'livingAreaValue' column if it exists (since it's the same as livingArea)
+if 'livingAreaValue' in combined_df.columns:
+    combined_df = combined_df.drop(columns=['livingAreaValue'])
+    print("Dropped livingAreaValue column as it's redundant with livingArea")
+
 # Detect and convert float columns without decimal parts to integers (excluding longitude and latitude)
 float_cols = combined_df.select_dtypes(include=['float64']).columns
 for col in float_cols:
@@ -34,13 +40,9 @@ for col in float_cols:
         if not has_decimal:
             combined_df[col] = combined_df[col].astype('Int64')  # Nullable integer
 
-# Additionally, convert livingAreaValue to integer (as requested)
-if 'livingAreaValue' in combined_df.columns and combined_df['livingAreaValue'].dtype == 'float64':
-    combined_df['livingAreaValue'] = combined_df['livingAreaValue'].fillna(0).round().astype('Int64')
-
 # Additionally, convert zipcode to integer (as requested)
 if 'zipcode' in combined_df.columns and combined_df['zipcode'].dtype == 'float64':
-    combined_df['zipcode'] = combined_df['zipcode'].fillna(0).round().astype('Int64')
+    combined_df['zipcode'] = combined_df['zipcode'].round().astype('Int64')
 
 # Convert time column from milliseconds to seconds for timestamp
 if 'time' in combined_df.columns:
@@ -135,8 +137,28 @@ def normalize_levels(level):
 if 'levels' in combined_df.columns:
     combined_df['levels'] = combined_df['levels'].apply(normalize_levels)
 
-# Remove rows with any null values
-combined_df = combined_df.dropna()
+# Fill missing numerical values with city median
+numeric_cols = combined_df.select_dtypes(include=[np.number]).columns
+exclude_cols = ['longitude', 'latitude', 'time']  # Exclude columns that shouldn't use median
+for col in numeric_cols:
+    if col not in exclude_cols:
+        combined_df[col] = combined_df.groupby('city')[col].transform(lambda x: x.fillna(x.median()))
+
+# Special handling for price: replace 0 values with state median
+if 'price' in combined_df.columns:
+    # Calculate state median for price (excluding 0 values)
+    state_median_price = combined_df[combined_df['price'] != 0].groupby('state')['price'].median()
+    
+    # Replace 0 values with state median
+    def replace_zero_price(row):
+        if row['price'] == 0:
+            return state_median_price.get(row['state'], row['price'])
+        return row['price']
+    
+    combined_df['price'] = combined_df.apply(replace_zero_price, axis=1)
+    
+    # Fill any remaining NaN in price with state median
+    combined_df['price'] = combined_df.groupby('state')['price'].transform(lambda x: x.fillna(x.median()))
 
 # Remove duplicate rows based on id column
 combined_df = combined_df.drop_duplicates(subset=['id'])

@@ -331,7 +331,7 @@ export default function Game() {
                     value={userGuess}
                     onChange={(e) => setUserGuess(e.target.value)}
                     placeholder="E.g: 250000"
-                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-500 ease-out"
+                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-500 ease-out appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                     <span className="text-gray-400 text-sm">$</span>

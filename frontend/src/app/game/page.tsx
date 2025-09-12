@@ -449,14 +449,14 @@ export default function Game() {
                       <span className="text-lg font-semibold text-gray-300">🎯</span>
                       <div>
                         <p className="text-sm text-gray-400">Your Mission</p>
-                        <p className="text-lg font-bold text-orange-400">Make Your Guess!</p>
+                        <p className="text-lg font-bold text-orange-400">Predict the price!</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
                       <span className="text-lg font-semibold text-gray-300">📮</span>
                       <div>
                         <p className="text-sm text-gray-400">ZIP Code</p>
-                        <p className="text-xl font-bold text-teal-300">{targetProperty.fields.zipcode}</p>
+                        <p className="text-xl font-bold text-teal-300">{targetProperty.fields.zipcode === 0 ? 'Unknown' : targetProperty.fields.zipcode}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -470,7 +470,7 @@ export default function Game() {
                       <span className="text-lg font-semibold text-gray-300">🏗️</span>
                       <div>
                         <p className="text-sm text-gray-400">Year Built</p>
-                        <p className="text-xl font-bold text-cyan-300">{targetProperty.fields.yearBuilt}</p>
+                        <p className="text-xl font-bold text-cyan-300">{targetProperty.fields.yearBuilt === 0 ? 'Unknown' : targetProperty.fields.yearBuilt}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -548,25 +548,25 @@ export default function Game() {
                     <div className="grid grid-cols-3 gap-4 mb-4">
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Bedrooms</p>
-                        <p className="text-xl font-bold text-purple-300">{targetProperty.fields.bedrooms}</p>
+                        <p className="text-xl font-bold text-purple-300">{targetProperty.fields.bedrooms === 0 ? 'N/A' : targetProperty.fields.bedrooms}</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Bathrooms</p>
-                        <p className="text-xl font-bold text-pink-300">{targetProperty.fields.bathrooms}</p>
+                        <p className="text-xl font-bold text-pink-300">{targetProperty.fields.bathrooms === 0 ? 'N/A' : targetProperty.fields.bathrooms}</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Living Area (sq ft)</p>
-                        <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.livingArea}</p>
+                        <p className="text-lg font-semibold text-blue-300">{targetProperty.fields.livingArea === 0 ? 'Unknown' : targetProperty.fields.livingArea}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Building Area</p>
-                        <p className="text-lg font-semibold text-cyan-300">{targetProperty.fields.buildingArea} sq ft</p>
+                        <p className="text-lg font-semibold text-cyan-300">{targetProperty.fields.buildingArea === 0 ? 'Unknown' : `${targetProperty.fields.buildingArea} sq ft`}</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Levels</p>
-                        <p className="text-lg font-semibold text-orange-300">{targetProperty.fields.levels}</p>
+                        <p className="text-lg font-semibold text-orange-300">{targetProperty.fields.levels === '' ? 'Unknown' : targetProperty.fields.levels}</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Home Type</p>
@@ -602,7 +602,7 @@ export default function Game() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Garage Spaces</p>
-                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.garageSpaces}</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.garageSpaces === 0 ? 'None' : targetProperty.fields.garageSpaces}</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Has Garage</p>
@@ -610,7 +610,7 @@ export default function Game() {
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <p className="text-sm text-gray-400 mb-1">Parking</p>
-                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.parking}</p>
+                        <p className="text-lg font-semibold text-indigo-300">{targetProperty.fields.parking === 0 ? 'None' : targetProperty.fields.parking}</p>
                       </div>
                     </div>
                   </div>
@@ -751,7 +751,7 @@ export default function Game() {
                                 ${entry.fields.price.toLocaleString()}
                               </span>
                               <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
-                                ${entry.fields.pricePerSquareFoot.toFixed(0)}/sq ft
+                                ${entry.fields.pricePerSquareFoot === 0 ? 'Unknown' : entry.fields.pricePerSquareFoot.toFixed(0)}/sq ft
                               </span>
                             </div>
                             <div className="space-y-2">
@@ -777,22 +777,22 @@ export default function Game() {
                             <div className="grid grid-cols-2 gap-3">
                               <div className="bg-white/5 rounded-xl p-3 border border-white/10">
                                 <p className="text-xs text-gray-400 mb-1">Bedrooms</p>
-                                <p className="text-lg font-bold text-purple-300">{entry.fields.bedrooms}</p>
+                                <p className="text-lg font-bold text-purple-300">{entry.fields.bedrooms === 0 ? 'N/A' : entry.fields.bedrooms}</p>
                               </div>
                               <div className="bg-white/5 rounded-xl p-3 border border-white/10">
                                 <p className="text-xs text-gray-400 mb-1">Bathrooms</p>
-                                <p className="text-lg font-bold text-pink-300">{entry.fields.bathrooms}</p>
+                                <p className="text-lg font-bold text-pink-300">{entry.fields.bathrooms === 0 ? 'N/A' : entry.fields.bathrooms}</p>
                               </div>
                             </div>
 
                             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
                               <p className="text-xs text-gray-400 mb-1">Living Area</p>
-                              <p className="text-lg font-semibold text-blue-300">{entry.fields.livingArea} sq ft</p>
+                              <p className="text-lg font-semibold text-blue-300">{entry.fields.livingArea === 0 ? 'Unknown' : `${entry.fields.livingArea} sq ft`}</p>
                             </div>
 
                             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
                               <p className="text-xs text-gray-400 mb-1">Year Built</p>
-                              <p className="text-lg font-semibold text-cyan-300">{entry.fields.yearBuilt}</p>
+                              <p className="text-lg font-semibold text-cyan-300">{entry.fields.yearBuilt === 0 ? 'Unknown' : entry.fields.yearBuilt}</p>
                             </div>
                           </div>
                         </div>
@@ -807,8 +807,8 @@ export default function Game() {
                             </summary>
                             <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-400">
                               <div className="space-y-2">
-                                <p><span className="text-gray-300">🚗 Garage:</span> {entry.fields.garageSpaces} spaces</p>
-                                <p><span className="text-gray-300">🏢 Levels:</span> {entry.fields.levels}</p>
+                                <p><span className="text-gray-300">🚗 Garage:</span> {entry.fields.garageSpaces === 0 ? 'None' : `${entry.fields.garageSpaces} spaces`}</p>
+                                <p><span className="text-gray-300">🏢 Levels:</span> {entry.fields.levels === '' ? 'Unknown' : entry.fields.levels}</p>
                                 <p><span className="text-gray-300">🏊 Pool:</span> {entry.fields.pool ? 'Yes' : 'No'}</p>
                                 <p><span className="text-gray-300">🛁 Spa:</span> {entry.fields.spa ? 'Yes' : 'No'}</p>
                               </div>

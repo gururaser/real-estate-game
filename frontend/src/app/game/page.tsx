@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Confetti from 'react-confetti';
 
 // Dynamically import map component to avoid SSR issues
 const PropertyMap = dynamic(() => import('../components/PropertyMap'), {
@@ -68,10 +69,11 @@ export default function Game() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [userGuess, setUserGuess] = useState('');
-  const [gameResult, setGameResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [gameResult, setGameResult] = useState<{ success: boolean; medal?: 'gold' | 'silver' | 'bronze'; message: string; guess?: number; actualPrice?: number; deviation?: number } | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
 
   console.log('Game component state initialized');
 
@@ -87,6 +89,14 @@ export default function Game() {
     console.log('useEffect triggered');
     fetchRandomProperty();
   }, []);
+
+  // Load new property when modal closes
+  useEffect(() => {
+    if (!showResultModal && gameResult) {
+      // Load new property when modal is closed and there's a result
+      // resetGame(); // Temporarily disabled for user control
+    }
+  }, [showResultModal]);
 
   console.log('Game component about to render, targetProperty:', targetProperty);
 
@@ -209,17 +219,36 @@ export default function Game() {
     const actualPrice = targetProperty.fields.price;
     const deviation = Math.abs(guess - actualPrice) / actualPrice;
 
+    let medal: 'gold' | 'silver' | 'bronze' | undefined = undefined;
+    let success = false;
+    let message = '';
+
     if (deviation <= 0.1) {
-      setGameResult({
-        success: true,
-        message: `Congratulations! Your guess was successful. Actual price: $${actualPrice.toLocaleString()}`,
-      });
+      medal = 'gold';
+      success = true;
+      message = 'Congratulations! You won the Gold Medal!';
+    } else if (deviation <= 0.2) {
+      medal = 'silver';
+      success = true;
+      message = 'Congratulations! You won the Silver Medal!';
+    } else if (deviation <= 0.3) {
+      medal = 'bronze';
+      success = true;
+      message = 'Congratulations! You won the Bronze Medal!';
     } else {
-      setGameResult({
-        success: false,
-        message: `Sorry, your guess was unsuccessful. Actual price: $${actualPrice.toLocaleString()}`,
-      });
+      success = false;
+      message = 'Sorry, your guess was unsuccessful. Try again!';
     }
+
+    setGameResult({
+      success,
+      medal,
+      message,
+      guess,
+      actualPrice,
+      deviation: deviation * 100, // Convert to percentage
+    });
+    setShowResultModal(true);
   };
 
   const resetGame = () => {
@@ -253,6 +282,96 @@ export default function Game() {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-pink-500/20"></div>
       </div>
 
+      {/* Result Modal */}
+      {showResultModal && gameResult && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          {gameResult.success && (
+            <Confetti
+              width={typeof window !== 'undefined' ? window.innerWidth : 1920}
+              height={typeof window !== 'undefined' ? window.innerHeight : 1080}
+              recycle={false}
+              numberOfPieces={200}
+              gravity={0.1}
+            />
+          )}
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full animate-in zoom-in-95 fade-in duration-300">
+            <div className="text-center">
+              {/* Medal Display */}
+              {gameResult.medal && (
+                <div className="mb-6">
+                  <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center ${
+                    gameResult.medal === 'gold' ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
+                    gameResult.medal === 'silver' ? 'bg-gradient-to-r from-gray-300 to-gray-500' :
+                    'bg-gradient-to-r from-amber-600 to-amber-800'
+                  } shadow-lg animate-bounce`}>
+                    <span className="text-4xl">
+                      {gameResult.medal === 'gold' ? '🥇' : gameResult.medal === 'silver' ? '🥈' : '🥉'}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mt-4 capitalize">
+                    {gameResult.medal} Medal!
+                  </h2>
+                </div>
+              )}
+
+              {/* Congratulation Message */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {gameResult.success ? 'Congratulations!' : 'Keep Trying!'}
+                </h3>
+                <p className="text-gray-300">
+                  {gameResult.message}
+                </p>
+              </div>
+
+              {/* Results Details */}
+              <div className="bg-white/10 rounded-2xl p-6 border border-white/20 mb-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Your Guess:</span>
+                    <span className="text-white font-semibold">${gameResult.guess?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Actual Price:</span>
+                    <span className="text-white font-semibold">${gameResult.actualPrice?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Deviation:</span>
+                    <span className={`font-semibold ${
+                      gameResult.deviation! <= 10 ? 'text-green-400' :
+                      gameResult.deviation! <= 20 ? 'text-yellow-400' :
+                      gameResult.deviation! <= 30 ? 'text-orange-400' :
+                      'text-red-400'
+                    }`}>
+                      {gameResult.deviation?.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowResultModal(false)}
+                  className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white py-3 rounded-2xl font-semibold shadow-lg hover:shadow-gray-500/25 transition-all duration-300 hover:scale-105"
+                >
+                  Stay Here
+                </button>
+                <button
+                  onClick={() => {
+                    setShowResultModal(false);
+                    resetGame();
+                  }}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-2xl font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+                >
+                  Continue Playing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10 p-4">
         <div className="max-w-7xl mx-auto">
           {/* Game Instructions */}
@@ -283,7 +402,7 @@ export default function Game() {
                   <span className="text-2xl mr-3">💰</span>
                   <h3 className="text-lg font-semibold text-white">Step 3: Guess</h3>
                 </div>
-                <p className="text-sm text-gray-300">Make your best price estimate! Get within 10% of the actual price to win</p>
+                <p className="text-sm text-gray-300">Make your best price estimate! Get within 30% for Bronze, 20% for Silver, or 10% for Gold medal!</p>
               </div>
             </div>
           </div>
@@ -299,13 +418,15 @@ export default function Game() {
               </svg>
               Main Page
             </Link>
-            <button
-              onClick={resetGame}
-              className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105"
-            >
-              <span className="mr-2">🔄</span>
-              New Game
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={resetGame}
+                className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105"
+              >
+                <span className="mr-2">🔄</span>
+                New Game
+              </button>
+            </div>
           </div>
 
           {/* Guess Section - Moved to top after search */}
@@ -317,7 +438,7 @@ export default function Game() {
                 </div>
                 <div>
                   <h2 className="text-4xl font-bold text-white mb-2">🎯 Your Price Guess</h2>
-                  <p className="text-lg text-yellow-200 font-medium">Can you guess the property's value within 10% accuracy?</p>
+                  <p className="text-lg text-yellow-200 font-medium">Can you guess the property's value within 30%, 20%, or 10% accuracy for Bronze, Silver, or Gold medal?</p>
                 </div>
                 <div className="ml-auto text-sm text-gray-400 bg-white/10 px-4 py-2 rounded-full border border-yellow-400/30">
                   <span className="text-yellow-300 font-semibold">Based on {searchResults?.entries?.length || 0} similar properties</span>
@@ -331,7 +452,10 @@ export default function Game() {
                     value={userGuess}
                     onChange={(e) => setUserGuess(e.target.value)}
                     placeholder="E.g: 250000"
-                    className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-500 ease-out appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    disabled={!!gameResult}
+                    className={`w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all duration-500 ease-out appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                      gameResult ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                     <span className="text-gray-400 text-sm">$</span>
@@ -339,7 +463,10 @@ export default function Game() {
                 </div>
                 <button
                   onClick={handleGuess}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-500 ease-out hover:scale-105 whitespace-nowrap"
+                  disabled={!!gameResult}
+                  className={`bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-500 ease-out hover:scale-105 whitespace-nowrap ${
+                    gameResult ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
                   🎯 Make Guess
                 </button>
@@ -358,14 +485,17 @@ export default function Game() {
                         ? 'bg-gradient-to-r from-green-500 to-emerald-500'
                         : 'bg-gradient-to-r from-red-500 to-pink-500'
                     }`}>
-                      <span className="text-2xl">{gameResult.success ? '🎉' : '�'}</span>
+                      <span className="text-2xl">{gameResult.success ? '🎉' : '❌'}</span>
                     </div>
                     <div>
                       <h3 className="text-3xl font-bold">
                         {gameResult.success ? '🎉 Congratulations! You Won!' : '💪 Keep Trying!'}
                       </h3>
                       <p className="text-lg text-gray-300 mt-1">
-                        {gameResult.success ? 'Amazing guess! You\'re a real estate expert!' : 'Great effort! Try again with more research.'}
+                        {gameResult.success && gameResult.medal === 'gold' ? 'Amazing guess! You\'re a real estate expert!' :
+                         gameResult.success && gameResult.medal === 'silver' ? 'Excellent work! You have great market insight!' :
+                         gameResult.success && gameResult.medal === 'bronze' ? 'Great job! You\'re getting better at this!' :
+                         'Great effort! Try again with more research.'}
                       </p>
                     </div>
                   </div>
@@ -373,10 +503,22 @@ export default function Game() {
                     <p className="text-xl leading-relaxed font-medium">
                       {gameResult.message}
                     </p>
-                    {gameResult.success && (
+                    {gameResult.success && gameResult.medal === 'gold' && (
                       <div className="mt-4 flex items-center text-green-300">
                         <span className="text-2xl mr-2">🏆</span>
-                        <span className="text-lg font-semibold">Perfect! You guessed within 10% of the actual price!</span>
+                        <span className="text-lg font-semibold">Perfect! You guessed within 10% of the actual price for Gold Medal!</span>
+                      </div>
+                    )}
+                    {gameResult.success && gameResult.medal === 'silver' && (
+                      <div className="mt-4 flex items-center text-blue-300">
+                        <span className="text-2xl mr-2">🥈</span>
+                        <span className="text-lg font-semibold">Excellent! You guessed within 20% of the actual price for Silver Medal!</span>
+                      </div>
+                    )}
+                    {gameResult.success && gameResult.medal === 'bronze' && (
+                      <div className="mt-4 flex items-center text-orange-300">
+                        <span className="text-2xl mr-2">🥉</span>
+                        <span className="text-lg font-semibold">Great job! You guessed within 30% of the actual price for Bronze Medal!</span>
                       </div>
                     )}
                   </div>

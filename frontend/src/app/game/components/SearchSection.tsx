@@ -173,84 +173,204 @@ export default function SearchSection({
             </summary>
             <div className="p-4 border-t border-white/10">
               {(() => {
-                const filters = [
-                  { key: 'state_filter', label: 'State', value: searchResults.metadata.search_params?.state_filter, icon: '🏛️' },
-                  { key: 'city_filter', label: 'City', value: searchResults.metadata.search_params?.city_filter, icon: '🏙️' },
-                  { key: 'county_filter', label: 'County', value: searchResults.metadata.search_params?.county_filter, icon: '🏛️' },
-                  { key: 'street_address_filter', label: 'Street Address', value: searchResults.metadata.search_params?.street_address, icon: '🏠' },
-                  { key: 'home_type_filter', label: 'Home Type', value: searchResults.metadata.search_params?.home_type_filter, icon: '🏠' },
-                  { key: 'event_filter', label: 'Event', value: searchResults.metadata.search_params?.event_filter, icon: '📢' },
-                  { key: 'is_bank_owned_filter', label: 'Bank Owned', value: searchResults.metadata.search_params?.is_bank_owned_filter, icon: '🏦' },
-                  { key: 'is_for_auction_filter', label: 'Auction', value: searchResults.metadata.search_params?.is_for_auction_filter, icon: '🔨' },
-                  { key: 'parking_filter', label: 'Parking', value: searchResults.metadata.search_params?.parking_filter, icon: '🚗' },
-                  { key: 'has_garage_filter', label: 'Garage', value: searchResults.metadata.search_params?.has_garage_filter, icon: '🏭' },
-                  { key: 'pool_filter', label: 'Pool', value: searchResults.metadata.search_params?.pool_filter, icon: '🏊' },
-                  { key: 'spa_filter', label: 'Spa', value: searchResults.metadata.search_params?.spa_filter, icon: '🛁' },
-                  { key: 'is_new_construction_filter', label: 'New Construction', value: searchResults.metadata.search_params?.is_new_construction_filter, icon: '🔨' },
-                  { key: 'has_pets_allowed_filter', label: 'Pets Allowed', value: searchResults.metadata.search_params?.has_pets_allowed_filter, icon: '🐾' },
-                  { key: 'max_price', label: 'Max Price', value: searchResults.metadata.search_params?.max_price, icon: '💰' },
-                  { key: 'min_price', label: 'Min Price', value: searchResults.metadata.search_params?.min_price, icon: '💰' },
-                  { key: 'max_bedrooms', label: 'Max Bedrooms', value: searchResults.metadata.search_params?.max_bedrooms, icon: '🛏️' },
-                  { key: 'min_bedrooms', label: 'Min Bedrooms', value: searchResults.metadata.search_params?.min_bedrooms, icon: '🛏️' },
-                  { key: 'max_bathrooms', label: 'Max Bathrooms', value: searchResults.metadata.search_params?.max_bathrooms, icon: '🛁' },
-                  { key: 'min_bathrooms', label: 'Min Bathrooms', value: searchResults.metadata.search_params?.min_bathrooms, icon: '🛁' },
-                  { key: 'max_living_area', label: 'Max Living Area', value: searchResults.metadata.search_params?.max_living_area, icon: '📐' },
-                  { key: 'min_living_area', label: 'Min Living Area', value: searchResults.metadata.search_params?.min_living_area, icon: '📐' },
+                const appliedFilters = [
+                  { key: 'state_filter', label: 'State', value: filters.state_filter, icon: '🏛️' },
+                  { key: 'city_filter', label: 'City', value: filters.city_filter, icon: '🏙️' },
+                  { key: 'county_filter', label: 'County', value: filters.county_filter, icon: '🏛️' },
+                  { key: 'home_type_filter', label: 'Home Type', value: filters.home_type_filter, icon: '🏠' },
+                  { key: 'event_filter', label: 'Event', value: filters.event_filter, icon: '📢' },
+                  { key: 'levels_filter', label: 'Levels', value: filters.levels_filter, icon: '🏢' },
+                  { key: 'is_bank_owned_filter', label: 'Bank Owned', value: filters.is_bank_owned_filter, icon: '🏦' },
+                  { key: 'is_for_auction_filter', label: 'Auction', value: filters.is_for_auction_filter, icon: '🔨' },
+                  { key: 'parking_filter', label: 'Parking', value: filters.parking_filter, icon: '🚗' },
+                  { key: 'has_garage_filter', label: 'Garage', value: filters.has_garage_filter, icon: '🏭' },
+                  { key: 'pool_filter', label: 'Pool', value: filters.pool_filter, icon: '🏊' },
+                  { key: 'spa_filter', label: 'Spa', value: filters.spa_filter, icon: '🛁' },
+                  { key: 'is_new_construction_filter', label: 'New Construction', value: filters.is_new_construction_filter, icon: '🔨' },
+                  { key: 'has_pets_allowed_filter', label: 'Pets Allowed', value: filters.has_pets_allowed_filter, icon: '🐾' },
+                  { key: 'max_price', label: 'Max Price', value: filters.max_price, icon: '💰' },
+                  { key: 'min_price', label: 'Min Price', value: filters.min_price, icon: '💰' },
+                  { key: 'max_bedrooms', label: 'Max Bedrooms', value: filters.max_bedrooms, icon: '🛏️' },
+                  { key: 'min_bedrooms', label: 'Min Bedrooms', value: filters.min_bedrooms, icon: '🛏️' },
+                  { key: 'max_bathrooms', label: 'Max Bathrooms', value: filters.max_bathrooms, icon: '🛁' },
+                  { key: 'min_bathrooms', label: 'Min Bathrooms', value: filters.min_bathrooms, icon: '🛁' },
+                  { key: 'max_living_area', label: 'Max Living Area', value: filters.max_living_area, icon: '📐' },
+                  { key: 'min_living_area', label: 'Min Living Area', value: filters.min_living_area, icon: '📐' },
                 ].filter(filter => filter.value !== null && filter.value !== undefined && filter.value !== '');
 
-                return filters.length > 0 ? (
-                  <div className="space-y-6">
-                    {/* Location & Property Type Filters */}
-                    {filters.some(f => ['state_filter', 'city_filter', 'county_filter', 'street_address_filter', 'home_type_filter', 'event_filter'].includes(f.key)) && (
-                      <div className="space-y-4">
+                const detectedFromQuery = [
+                  { key: 'street_address', label: 'Street Address', value: searchResults.metadata.search_params?.street_address, icon: '🏠' },
+                  { key: 'city', label: 'City', value: searchResults.metadata.search_params?.city_filter, icon: '🏙️' },
+                  { key: 'county', label: 'County', value: searchResults.metadata.search_params?.county_filter, icon: '🏛️' },
+                  { key: 'state', label: 'State', value: searchResults.metadata.search_params?.state_filter, icon: '🏛️' },
+                  { key: 'home_type', label: 'Home Type', value: searchResults.metadata.search_params?.home_type_filter, icon: '🏠' },
+                  { key: 'event', label: 'Event', value: searchResults.metadata.search_params?.event_filter, icon: '📢' },
+                  { key: 'max_price_detected', label: 'Max Price', value: searchResults.metadata.search_params?.max_price, icon: '💰' },
+                  { key: 'min_price_detected', label: 'Min Price', value: searchResults.metadata.search_params?.min_price, icon: '💰' },
+                  { key: 'max_bedrooms_detected', label: 'Max Bedrooms', value: searchResults.metadata.search_params?.max_bedrooms, icon: '🛏️' },
+                  { key: 'min_bedrooms_detected', label: 'Min Bedrooms', value: searchResults.metadata.search_params?.min_bedrooms, icon: '🛏️' },
+                  { key: 'max_bathrooms_detected', label: 'Max Bathrooms', value: searchResults.metadata.search_params?.max_bathrooms, icon: '🛁' },
+                  { key: 'min_bathrooms_detected', label: 'Min Bathrooms', value: searchResults.metadata.search_params?.min_bathrooms, icon: '🛁' },
+                  { key: 'max_living_area_detected', label: 'Max Living Area', value: searchResults.metadata.search_params?.max_living_area, icon: '📐' },
+                  { key: 'min_living_area_detected', label: 'Min Living Area', value: searchResults.metadata.search_params?.min_living_area, icon: '📐' },
+                ].filter(filter => {
+                  // Only show values detected from query that were NOT manually selected by user
+                  const filterKey = filter.key.replace('_detected', '');
+                  const userAppliedValue = filters[filterKey];
+                  
+                  // Convert both values to the same type for comparison
+                  const normalizedFilterValue = typeof filter.value === 'number' ? filter.value.toString() : filter.value;
+                  const normalizedUserValue = typeof userAppliedValue === 'number' ? userAppliedValue.toString() : userAppliedValue;
+                  
+                  return filter.value !== null && 
+                         filter.value !== undefined && 
+                         filter.value !== '' && 
+                         normalizedFilterValue !== normalizedUserValue;
+                });
+
+                return (
+                  <div className="space-y-8">
+                    {/* Applied Filters Section */}
+                    {appliedFilters.length > 0 && (
+                      <div className="space-y-6">
                         <div className="flex items-center mb-4">
                           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
-                            <span className="text-lg">📍</span>
+                            <span className="text-lg">🎯</span>
                           </div>
-                          <h4 className="text-lg font-semibold text-white">Location & Type</h4>
+                          <h4 className="text-lg font-semibold text-white">Applied Filters</h4>
+                          <p className="text-sm text-blue-200 ml-2">User-selected filters</p>
                         </div>
 
-                        <div className="space-y-3">
-                          {filters.filter(f => ['state_filter', 'city_filter', 'county_filter', 'street_address_filter', 'home_type_filter', 'event_filter'].includes(f.key)).map((filter) => (
-                            <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                              <div className="flex items-center">
-                                <span className="text-lg mr-3">{filter.icon}</span>
-                                <span className="text-sm text-gray-300">{filter.label}</span>
+                        {/* Location & Property Type Filters */}
+                        {appliedFilters.some(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter', 'levels_filter'].includes(f.key)) && (
+                          <div className="space-y-4">
+                            <div className="flex items-center mb-4">
+                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                                <span className="text-sm">📍</span>
                               </div>
-                              <div className="text-sm font-semibold text-white">
-                                {Array.isArray(filter.value) ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {filter.value.map((item, idx) => (
-                                      <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
-                                        {item}
-                                      </span>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span className="text-cyan-300">
-                                    {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
-                                  </span>
-                                )}
-                              </div>
+                              <h5 className="text-base font-semibold text-white">Location & Type</h5>
                             </div>
-                          ))}
-                        </div>
+
+                            <div className="space-y-3">
+                              {appliedFilters.filter(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter', 'levels_filter'].includes(f.key)).map((filter) => (
+                                <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                  <div className="flex items-center">
+                                    <span className="text-lg mr-3">{filter.icon}</span>
+                                    <span className="text-sm text-gray-300">{filter.label}</span>
+                                  </div>
+                                  <div className="text-sm font-semibold text-white">
+                                    {Array.isArray(filter.value) ? (
+                                      <div className="flex flex-wrap gap-1">
+                                        {filter.value.map((item, idx) => (
+                                          <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                                            {item}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span className="text-cyan-300">
+                                        {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Features & Amenities Filters */}
+                        {appliedFilters.some(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)) && (
+                          <div className="space-y-4">
+                            <div className="flex items-center mb-4">
+                              <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                                <span className="text-sm">🏠</span>
+                              </div>
+                              <h5 className="text-base font-semibold text-white">Features & Amenities</h5>
+                            </div>
+
+                            <div className="space-y-3">
+                              {appliedFilters.filter(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)).map((filter) => (
+                                <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                  <div className="flex items-center">
+                                    <span className="text-lg mr-3">{filter.icon}</span>
+                                    <span className="text-sm text-gray-300">{filter.label}</span>
+                                  </div>
+                                  <div className="text-sm font-semibold text-white">
+                                    {Array.isArray(filter.value) ? (
+                                      <div className="flex flex-wrap gap-1">
+                                        {filter.value.map((item, idx) => (
+                                          <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                                            {item}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span className="text-emerald-300">
+                                        {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Price & Size Filters */}
+                        {appliedFilters.some(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)) && (
+                          <div className="space-y-4">
+                            <div className="flex items-center mb-4">
+                              <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                                <span className="text-sm">📊</span>
+                              </div>
+                              <h5 className="text-base font-semibold text-white">Price & Size Ranges</h5>
+                            </div>
+
+                            <div className="space-y-3">
+                              {appliedFilters.filter(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)).map((filter) => (
+                                <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                                  <div className="flex items-center">
+                                    <span className="text-lg mr-3">{filter.icon}</span>
+                                    <span className="text-sm text-gray-300">{filter.label}</span>
+                                  </div>
+                                  <div className="text-sm font-semibold text-white">
+                                    {Array.isArray(filter.value) ? (
+                                      <div className="flex flex-wrap gap-1">
+                                        {filter.value.map((item, idx) => (
+                                          <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                                            {item}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span className="text-pink-300">
+                                        {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
-                    {/* Features & Amenities Filters */}
-                    {filters.some(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)) && (
-                      <div className="space-y-4">
+                    {/* Detected from Query Section */}
+                    {detectedFromQuery.length > 0 && (
+                      <div className="space-y-6">
                         <div className="flex items-center mb-4">
-                          <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
-                            <span className="text-lg">🏠</span>
+                          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mr-3">
+                            <span className="text-lg">🔍</span>
                           </div>
-                          <h4 className="text-lg font-semibold text-white">Features & Amenities</h4>
+                          <h4 className="text-lg font-semibold text-white">Detected from Query</h4>
+                          <p className="text-sm text-orange-200 ml-2">Automatically extracted from natural language</p>
                         </div>
 
                         <div className="space-y-3">
-                          {filters.filter(f => ['is_bank_owned_filter', 'is_for_auction_filter', 'parking_filter', 'has_garage_filter', 'pool_filter', 'spa_filter', 'is_new_construction_filter', 'has_pets_allowed_filter'].includes(f.key)).map((filter) => (
-                            <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                          {detectedFromQuery.map((filter) => (
+                            <div key={filter.key} className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-lg border border-orange-500/20">
                               <div className="flex items-center">
                                 <span className="text-lg mr-3">{filter.icon}</span>
                                 <span className="text-sm text-gray-300">{filter.label}</span>
@@ -259,13 +379,13 @@ export default function SearchSection({
                                 {Array.isArray(filter.value) ? (
                                   <div className="flex flex-wrap gap-1">
                                     {filter.value.map((item, idx) => (
-                                      <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                                      <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white">
                                         {item}
                                       </span>
                                     ))}
                                   </div>
                                 ) : (
-                                  <span className="text-emerald-300">
+                                  <span className="text-orange-300">
                                     {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
                                   </span>
                                 )}
@@ -276,51 +396,16 @@ export default function SearchSection({
                       </div>
                     )}
 
-                    {/* Price & Size Filters */}
-                    {filters.some(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)) && (
-                      <div className="space-y-4">
-                        <div className="flex items-center mb-4">
-                          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
-                            <span className="text-lg">📊</span>
-                          </div>
-                          <h4 className="text-lg font-semibold text-white">Price & Size Ranges</h4>
+                    {/* No Filters or Detection Message */}
+                    {appliedFilters.length === 0 && detectedFromQuery.length === 0 && (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-3xl">🔍</span>
                         </div>
-
-                        <div className="space-y-3">
-                          {filters.filter(f => ['max_price', 'min_price', 'max_bedrooms', 'min_bedrooms', 'max_bathrooms', 'min_bathrooms', 'max_living_area', 'min_living_area'].includes(f.key)).map((filter) => (
-                            <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                              <div className="flex items-center">
-                                <span className="text-lg mr-3">{filter.icon}</span>
-                                <span className="text-sm text-gray-300">{filter.label}</span>
-                              </div>
-                              <div className="text-sm font-semibold text-white">
-                                {Array.isArray(filter.value) ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {filter.value.map((item, idx) => (
-                                      <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                                        {item}
-                                      </span>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span className="text-pink-300">
-                                    {typeof filter.value === 'number' ? filter.value.toLocaleString() : filter.value}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                        <h4 className="text-xl font-semibold text-gray-300 mb-2">No Filters Applied</h4>
+                        <p className="text-gray-400">This search used natural language processing without specific filters</p>
                       </div>
                     )}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <span className="text-3xl">🔍</span>
-                    </div>
-                    <h4 className="text-xl font-semibold text-gray-300 mb-2">No Filters Applied</h4>
-                    <p className="text-gray-400">This search used natural language processing without specific filters</p>
                   </div>
                 );
               })()}

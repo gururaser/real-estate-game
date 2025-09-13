@@ -201,7 +201,14 @@ export default function SearchSection({
                   { key: 'min_bathrooms', label: 'Min Bathrooms', value: filters.min_bathrooms, icon: '🛁' },
                   { key: 'max_living_area', label: 'Max Living Area', value: filters.max_living_area, icon: '📐' },
                   { key: 'min_living_area', label: 'Min Living Area', value: filters.min_living_area, icon: '📐' },
-                ].filter(filter => filter.value !== null && filter.value !== undefined && filter.value !== '');
+                ].filter(filter => {
+                  // For arrays, check if they have elements
+                  if (Array.isArray(filter.value)) {
+                    return filter.value.length > 0;
+                  }
+                  // For other values, check if they're not empty/null/undefined
+                  return filter.value !== null && filter.value !== undefined && filter.value !== '';
+                });
 
                 const detectedFromQuery = [
                   { key: 'street_address', label: 'Street Address', value: searchResults.metadata.search_params?.street_address, icon: '🏠' },
@@ -739,75 +746,108 @@ export default function SearchSection({
                     <span className="text-lg">📍</span>
                   </div>
                   <h3 className="text-xl font-semibold text-white">Location & Type</h3>
+                  <p className="text-sm text-blue-200 ml-2">(Select multiple or none)</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* State Filter */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <label className="text-white font-medium">State</label>
-                    <select
-                      value={filters.state_filter}
-                      onChange={(e) => setFilters({ ...filters, state_filter: e.target.value })}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
-                    >
-                      <option value="">All States</option>
+                    <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                       {FILTER_OPTIONS.state.map((state) => (
-                        <option key={state} value={state} className="bg-slate-800">
-                          {state.toUpperCase()}
-                        </option>
+                        <label key={state} className="flex items-center space-x-2 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all duration-200">
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(filters.state_filter) ? filters.state_filter.includes(state) : false}
+                            onChange={(e) => {
+                              const currentValues = Array.isArray(filters.state_filter) ? filters.state_filter : [];
+                              if (e.target.checked) {
+                                setFilters({ ...filters, state_filter: [...currentValues, state] });
+                              } else {
+                                setFilters({ ...filters, state_filter: currentValues.filter(s => s !== state) });
+                              }
+                            }}
+                            className="w-4 h-4 text-blue-600 bg-white/5 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-white text-sm">{state.toUpperCase()}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
                   {/* Home Type Filter */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <label className="text-white font-medium">Home Type</label>
-                    <select
-                      value={filters.home_type_filter}
-                      onChange={(e) => setFilters({ ...filters, home_type_filter: e.target.value })}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
-                    >
-                      <option value="">All Types</option>
+                    <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                       {FILTER_OPTIONS.homeType.map((type) => (
-                        <option key={type} value={type} className="bg-slate-800">
-                          {formatHomeType(type)}
-                        </option>
+                        <label key={type} className="flex items-center space-x-2 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all duration-200">
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(filters.home_type_filter) ? filters.home_type_filter.includes(type) : false}
+                            onChange={(e) => {
+                              const currentValues = Array.isArray(filters.home_type_filter) ? filters.home_type_filter : [];
+                              if (e.target.checked) {
+                                setFilters({ ...filters, home_type_filter: [...currentValues, type] });
+                              } else {
+                                setFilters({ ...filters, home_type_filter: currentValues.filter(t => t !== type) });
+                              }
+                            }}
+                            className="w-4 h-4 text-blue-600 bg-white/5 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-white text-sm">{formatHomeType(type)}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
                   {/* Event Filter */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <label className="text-white font-medium">Event</label>
-                    <select
-                      value={filters.event_filter}
-                      onChange={(e) => setFilters({ ...filters, event_filter: e.target.value })}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
-                    >
-                      <option value="">All Events</option>
+                    <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                       {FILTER_OPTIONS.event.map((event) => (
-                        <option key={event} value={event} className="bg-slate-800">
-                          {event.charAt(0).toUpperCase() + event.slice(1)}
-                        </option>
+                        <label key={event} className="flex items-center space-x-2 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all duration-200">
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(filters.event_filter) ? filters.event_filter.includes(event) : false}
+                            onChange={(e) => {
+                              const currentValues = Array.isArray(filters.event_filter) ? filters.event_filter : [];
+                              if (e.target.checked) {
+                                setFilters({ ...filters, event_filter: [...currentValues, event] });
+                              } else {
+                                setFilters({ ...filters, event_filter: currentValues.filter(e => e !== event) });
+                              }
+                            }}
+                            className="w-4 h-4 text-blue-600 bg-white/5 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-white text-sm">{event.charAt(0).toUpperCase() + event.slice(1)}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
                   {/* Levels Filter */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <label className="text-white font-medium">Levels</label>
-                    <select
-                      value={filters.levels_filter}
-                      onChange={(e) => setFilters({ ...filters, levels_filter: e.target.value })}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
-                    >
-                      <option value="">All Levels</option>
+                    <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                       {FILTER_OPTIONS.levels.map((level) => (
-                        <option key={level} value={level} className="bg-slate-800">
-                          {level}
-                        </option>
+                        <label key={level} className="flex items-center space-x-2 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all duration-200">
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(filters.levels_filter) ? filters.levels_filter.includes(level) : false}
+                            onChange={(e) => {
+                              const currentValues = Array.isArray(filters.levels_filter) ? filters.levels_filter : [];
+                              if (e.target.checked) {
+                                setFilters({ ...filters, levels_filter: [...currentValues, level] });
+                              } else {
+                                setFilters({ ...filters, levels_filter: currentValues.filter(l => l !== level) });
+                              }
+                            }}
+                            className="w-4 h-4 text-blue-600 bg-white/5 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                          <span className="text-white text-sm">{level}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -884,12 +924,12 @@ export default function SearchSection({
               <button
                 onClick={() => {
                   setFilters({
-                    state_filter: '',
+                    state_filter: [],
                     city_filter: '',
                     county_filter: '',
-                    home_type_filter: '',
-                    event_filter: '',
-                    levels_filter: '',
+                    home_type_filter: [],
+                    event_filter: [],
+                    levels_filter: [],
                     is_bank_owned_filter: '',
                     is_for_auction_filter: '',
                     parking_filter: '',

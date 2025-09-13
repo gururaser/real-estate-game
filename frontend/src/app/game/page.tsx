@@ -48,13 +48,13 @@ export default function Game() {
     levels_weight: 0.1,
   });
   const [filters, setFilters] = useState<Record<string, any>>({
-    // Categorical filters
-    state_filter: '',
+    // Categorical filters (now arrays for multi-select)
+    state_filter: [],
     city_filter: '',
     county_filter: '',
-    home_type_filter: '',
-    event_filter: '',
-    levels_filter: '',
+    home_type_filter: [],
+    event_filter: [],
+    levels_filter: [],
     // Boolean filters
     is_bank_owned_filter: '',
     is_for_auction_filter: '',
@@ -210,7 +210,14 @@ export default function Game() {
         // Filter out empty values and convert boolean filters to numbers
         const activeFilters = Object.fromEntries(
           Object.entries(filters)
-            .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+            .filter(([_, value]) => {
+              // For arrays, check if they have elements
+              if (Array.isArray(value)) {
+                return value.length > 0;
+              }
+              // For other values, check if they're not empty/null/undefined
+              return value !== '' && value !== null && value !== undefined;
+            })
             .map(([key, value]) => {
               // Convert boolean filter values from string to number
               if (key.includes('_filter') && (key.startsWith('is_') || key.startsWith('has_') || key.startsWith('pool') || key.startsWith('spa') || key.startsWith('parking'))) {
@@ -219,6 +226,11 @@ export default function Game() {
               // Convert numeric filter values to numbers
               if (key.startsWith('min_') || key.startsWith('max_')) {
                 return [key, value === '' ? undefined : Number(value)];
+              }
+              // Convert multi-select arrays to comma-separated strings for API compatibility
+              if (Array.isArray(value) && ['state_filter', 'home_type_filter', 'event_filter', 'levels_filter'].includes(key)) {
+                // For now, keep as array since backend should support arrays with in_ operator
+                return [key, value];
               }
               return [key, value];
             })

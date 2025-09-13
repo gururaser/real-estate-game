@@ -24,12 +24,12 @@ filters = [
         field_name="id",
         description="Property IDs to exclude.",
     ),
-    # State filters
+    # State filters - now supports multiple values
     PropertyFilter(
-        operator=real_estate_schema.state.__eq__,
+        operator=real_estate_schema.state.in_,
         param_name="state_filter",
         field_name="state",
-        description="Filter by state (e.g., 'ca', 'ga').",
+        description="Filter by state(s) (array of strings, e.g., ['ca', 'ga']).",
     ),
     # City filters
     PropertyFilter(
@@ -45,19 +45,26 @@ filters = [
         field_name="county",
         description="Filter by county name.",
     ),
-    # Home type filters
+    # Home type filters - now supports multiple values
     PropertyFilter(
-        operator=real_estate_schema.homeType.__eq__,
+        operator=real_estate_schema.homeType.in_,
         param_name="home_type_filter",
         field_name="homeType",
-        description="Filter by home type (single_family, condo, townhouse, etc.).",
+        description="Filter by home type(s) (array of strings, e.g., ['single_family', 'condo']).",
     ),
-    # Event filters
+    # Event filters - now supports multiple values
     PropertyFilter(
-        operator=real_estate_schema.event.__eq__,
+        operator=real_estate_schema.event.in_,
         param_name="event_filter",
         field_name="event",
-        description="Filter by event type (listed for sale, sold, etc.).",
+        description="Filter by event type(s) (array of strings, e.g., ['listed for sale', 'sold']).",
+    ),
+    # Levels filters - now supports multiple values
+    PropertyFilter(
+        operator=real_estate_schema.levels.in_,
+        param_name="levels_filter",
+        field_name="levels",
+        description="Filter by levels (array of strings, e.g., ['1', '2', '3+']).",
     ),
     # Integer filters (0/1 values)
     PropertyFilter(

@@ -473,12 +473,12 @@ export default function SearchSection({
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white whitespace-nowrap">
                         {formatHomeType(entry.fields.homeType)}
                       </span>
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white">
-                        Similarity: {entry.metadata?.score ? `${(entry.metadata.score * 100).toFixed(1)}%` : 'N/A'}
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white whitespace-nowrap">
+                        🎯 {entry.metadata?.score ? `${(entry.metadata.score * 100).toFixed(1)}%` : 'N/A'}
                       </span>
                     </div>
 

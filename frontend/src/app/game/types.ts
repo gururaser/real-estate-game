@@ -36,6 +36,9 @@ export interface Property {
     hasPetsAllowed: number;
     time: number;
   };
+  metadata?: {
+    score: number;
+  };
 }
 
 export interface SearchResult {

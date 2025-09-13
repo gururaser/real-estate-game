@@ -178,6 +178,7 @@ export default function Game() {
       });
       const data = await response.json();
       setSearchResults(data);
+      console.log('Search Results:', data);
       console.log('Applied Filters JSON:', data.metadata.search_params);
       setHasSearched(true);
     } catch (error) {

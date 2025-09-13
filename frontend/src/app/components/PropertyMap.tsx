@@ -158,30 +158,33 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
           <Marker 
             position={[targetProperty.fields.latitude, targetProperty.fields.longitude]} 
             icon={targetIcon}
+            eventHandlers={height === "h-32" ? { click: () => {} } : undefined}
           >
-            <Popup>
-              <div className="text-sm max-w-48">
-                <div className="font-bold text-red-600 mb-2 flex items-center">
-                  <span className="text-lg mr-1">🎯</span>
-                  Target Property
-                </div>
-                {targetProperty.fields.streetAddress && (
-                  <div className="mb-2 text-gray-700">
-                    <div className="font-medium">Address:</div>
-                    <div className="text-xs">{targetProperty.fields.streetAddress}</div>
+            {height !== "h-32" && (
+              <Popup>
+                <div className="text-sm max-w-48">
+                  <div className="font-bold text-red-600 mb-2 flex items-center">
+                    <span className="text-lg mr-1">🎯</span>
+                    Target Property
                   </div>
-                )}
-                {targetProperty.fields.city && targetProperty.fields.state && (
-                  <div className="mb-2 text-gray-700">
-                    <div className="font-medium">Location:</div>
-                    <div className="text-xs">{targetProperty.fields.city}, {targetProperty.fields.state}</div>
+                  {targetProperty.fields.streetAddress && (
+                    <div className="mb-2 text-gray-700">
+                      <div className="font-medium">Address:</div>
+                      <div className="text-xs">{targetProperty.fields.streetAddress}</div>
+                    </div>
+                  )}
+                  {targetProperty.fields.city && targetProperty.fields.state && (
+                    <div className="mb-2 text-gray-700">
+                      <div className="font-medium">Location:</div>
+                      <div className="text-xs">{targetProperty.fields.city}, {targetProperty.fields.state}</div>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+                    📍 Coordinates: {targetProperty.fields.latitude.toFixed(6)}, {targetProperty.fields.longitude.toFixed(6)}
                   </div>
-                )}
-                <div className="text-xs text-gray-500 border-t pt-2 mt-2">
-                  📍 Coordinates: {targetProperty.fields.latitude.toFixed(6)}, {targetProperty.fields.longitude.toFixed(6)}
                 </div>
-              </div>
-            </Popup>
+              </Popup>
+            )}
           </Marker>
         )}
         
@@ -191,62 +194,67 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
             key={index}
             position={[property.fields.latitude, property.fields.longitude]} 
             icon={searchResultIcon}
+            eventHandlers={height === "h-32" ? { click: () => {} } : undefined}
           >
+            {height !== "h-32" && (
+              <Popup>
+                <div className="text-sm max-w-48">
+                  <div className="font-bold text-blue-600 mb-2 flex items-center">
+                    <span className="text-lg mr-1">🔍</span>
+                    Search Result
+                  </div>
+                  <div className="mb-2 text-gray-700">
+                    <div className="font-medium">Price:</div>
+                    <div className="text-lg font-bold text-green-600">${property.fields.price.toLocaleString()}</div>
+                  </div>
+                  {property.fields.streetAddress && (
+                    <div className="mb-2 text-gray-700">
+                      <div className="font-medium">Address:</div>
+                      <div className="text-xs">{property.fields.streetAddress}</div>
+                    </div>
+                  )}
+                  {property.fields.city && property.fields.state && (
+                    <div className="mb-2 text-gray-700">
+                      <div className="font-medium">Location:</div>
+                      <div className="text-xs">{property.fields.city}, {property.fields.state}</div>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+                    📍 Coordinates: {property.fields.latitude.toFixed(6)}, {property.fields.longitude.toFixed(6)}
+                  </div>
+                </div>
+              </Popup>
+            )}
+          </Marker>
+        ))}
+        
+        {/* Target Property Marker */}
+        <Marker position={position} icon={targetProperty && targetProperty.fields.latitude === latitude && targetProperty.fields.longitude === longitude ? targetIcon : searchResultIcon} eventHandlers={height === "h-32" ? { click: () => {} } : undefined}>
+          {height !== "h-32" && (
             <Popup>
               <div className="text-sm max-w-48">
                 <div className="font-bold text-blue-600 mb-2 flex items-center">
                   <span className="text-lg mr-1">🔍</span>
                   Search Result
                 </div>
-                <div className="mb-2 text-gray-700">
-                  <div className="font-medium">Price:</div>
-                  <div className="text-lg font-bold text-green-600">${property.fields.price.toLocaleString()}</div>
-                </div>
-                {property.fields.streetAddress && (
+                {address && (
                   <div className="mb-2 text-gray-700">
                     <div className="font-medium">Address:</div>
-                    <div className="text-xs">{property.fields.streetAddress}</div>
+                    <div className="text-xs">{address}</div>
                   </div>
                 )}
-                {property.fields.city && property.fields.state && (
+                {city && state && (
                   <div className="mb-2 text-gray-700">
                     <div className="font-medium">Location:</div>
-                    <div className="text-xs">{property.fields.city}, {property.fields.state}</div>
+                    <div className="text-xs">{city}, {state}</div>
                   </div>
                 )}
                 <div className="text-xs text-gray-500 border-t pt-2 mt-2">
-                  📍 Coordinates: {property.fields.latitude.toFixed(6)}, {property.fields.longitude.toFixed(6)}
+                  📍 Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}
                 </div>
               </div>
             </Popup>
-          </Marker>
-        ))}
-        
-        {/* Target Property Marker */}
-        <Marker position={position} icon={targetProperty && targetProperty.fields.latitude === latitude && targetProperty.fields.longitude === longitude ? targetIcon : searchResultIcon}>
-          <Popup>
-            <div className="text-sm max-w-48">
-              <div className="font-bold text-blue-600 mb-2 flex items-center">
-                <span className="text-lg mr-1">🔍</span>
-                Search Result
-              </div>
-              {address && (
-                <div className="mb-2 text-gray-700">
-                  <div className="font-medium">Address:</div>
-                  <div className="text-xs">{address}</div>
-                </div>
-              )}
-              {city && state && (
-                <div className="mb-2 text-gray-700">
-                  <div className="font-medium">Location:</div>
-                  <div className="text-xs">{city}, {state}</div>
-                </div>
-              )}
-              <div className="text-xs text-gray-500 border-t pt-2 mt-2">
-                📍 Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}
-              </div>
-            </div>
-          </Popup>
+          )}
         </Marker>
       </MapContainer>
 

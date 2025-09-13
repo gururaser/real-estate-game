@@ -8,14 +8,12 @@ import { formatHomeType } from '../utils';
 // Dynamically import map component to avoid SSR issues
 const PropertyMap = dynamic(() => import('../../components/PropertyMap'), {
   ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-32 bg-slate-600/50 rounded-lg">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-400 border-t-transparent mx-auto mb-1"></div>
-        <p className="text-xs text-gray-400">Loading map...</p>
-      </div>
+  loading: () => <div className="flex items-center justify-center h-32 bg-slate-600/50 rounded-lg">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-400 border-t-transparent mx-auto mb-1"></div>
+      <p className="text-xs text-gray-400">Loading map...</p>
     </div>
-  )
+  </div>
 });
 
 interface SearchSectionProps {
@@ -300,17 +298,22 @@ export default function SearchSection({
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-green-300">
-                        ${entry.fields.price.toLocaleString()}
-                      </span>
-                      <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
-                        ${entry.fields.pricePerSquareFoot === 0 ? 'Unknown' : entry.fields.pricePerSquareFoot.toFixed(0)}/sq ft
-                      </span>
+                    <div className="flex items-start justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-2xl font-bold text-green-300">
+                          ${entry.fields.price.toLocaleString()}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 mt-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-500/30 text-xs font-medium text-blue-300">
+                          🆔 {entry.id}
+                        </span>
+                        <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full mt-2 inline-block">
+                          ${entry.fields.pricePerSquareFoot === 0 ? 'Unknown' : entry.fields.pricePerSquareFoot.toFixed(0)}/sq ft
+                        </span>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <p className="text-gray-300">
-                        <span className="text-gray-400">📍</span> {entry.fields.city}, {entry.fields.state}
+                        <span className="text-gray-400">📍</span> {entry.fields.city}, {entry.fields.state} {entry.fields.zipcode !== 0 && <span className="text-cyan-400 font-medium">({entry.fields.zipcode})</span>}
                       </p>
                       <p className="text-gray-300">
                         <span className="text-gray-400">🏛️</span> {entry.fields.county}
@@ -335,9 +338,12 @@ export default function SearchSection({
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                         {formatHomeType(entry.fields.homeType)}
+                      </span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                        Similarity: {entry.metadata?.score ? `${(entry.metadata.score * 100).toFixed(1)}%` : 'N/A'}
                       </span>
                     </div>
 

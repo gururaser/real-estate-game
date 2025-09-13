@@ -4,11 +4,11 @@ const nextConfig = {
     return [
       {
         source: '/api/qdrant/:path*',
-        destination: 'http://qdrant:6333/:path*',
+        destination: (process.env.NEXT_PUBLIC_QDRANT_URL || 'http://qdrant:6333') + '/:path*',
       },
       {
         source: '/api/superlinked/:path*',
-        destination: 'http://superlinked:8080/:path*',
+        destination: (process.env.NEXT_PUBLIC_SUPERLINKED_URL || 'http://superlinked:8080') + '/:path*',
       },
     ];
   },

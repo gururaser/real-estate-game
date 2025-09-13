@@ -172,7 +172,7 @@ export default function Game() {
         },
         body: JSON.stringify({
           natural_query: searchQuery.toLowerCase(),
-          limit: 5,
+          limit: 30,
           ids_exclude: [targetProperty.realId],
         }),
       });

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 // Import Leaflet CSS
@@ -42,6 +42,17 @@ const searchResultIcon = new L.Icon({
   iconAnchor: [14, 28],
   popupAnchor: [0, -28],
 });
+
+// Component to handle map centering
+function MapCenterHandler({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  
+  return null;
+}
 
 interface Property {
   id: string;
@@ -124,11 +135,18 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
       <div className={`${height} rounded-lg overflow-hidden border border-slate-600 relative`}>
       <MapContainer
         center={position}
-        zoom={10}
+        zoom={15}
         style={{ height: '100%', width: '100%' }}
         className="rounded-lg"
         zoomControl={true}
+        scrollWheelZoom={true}
+        doubleClickZoom={height !== "h-32"}
+        boxZoom={height !== "h-32"}
+        keyboard={height !== "h-32"}
+        dragging={height !== "h-32"}
+        touchZoom={height !== "h-32"}
       >
+        <MapCenterHandler center={position} zoom={15} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -248,6 +266,7 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
               className="rounded-2xl"
               zoomControl={true}
             >
+              <MapCenterHandler center={position} zoom={12} />
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

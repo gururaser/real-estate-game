@@ -47,10 +47,12 @@ export default function TargetProperty({ targetProperty, searchResults }: Target
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
-              <span className="text-lg font-semibold text-gray-300">💰</span>
+              <span className="text-lg font-semibold text-gray-300">🆔</span>
               <div>
-                <p className="text-sm text-gray-400">Property Price</p>
-                <p className="text-2xl font-bold text-yellow-400 animate-pulse">????</p>
+                <p className="text-sm text-gray-400">Property ID</p>
+                <span className="inline-flex items-center px-2 py-1 mt-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-500/30 text-xs font-medium text-blue-300">
+                  {targetProperty.realId}
+                </span>
               </div>
             </div>
             <div className="flex items-center space-x-4">

@@ -202,49 +202,73 @@ export default function Game() {
     if (!searchQuery.trim() || !targetProperty) return;
 
     setLoading(true);
-    try {
-      // Filter out empty values and convert boolean filters to numbers
-      const activeFilters = Object.fromEntries(
-        Object.entries(filters)
-          .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
-          .map(([key, value]) => {
-            // Convert boolean filter values from string to number
-            if (key.includes('_filter') && (key.startsWith('is_') || key.startsWith('has_') || key.startsWith('pool') || key.startsWith('spa') || key.startsWith('parking'))) {
-              return [key, value === '1' ? 1 : value === '0' ? 0 : value];
-            }
-            // Convert numeric filter values to numbers
-            if (key.startsWith('min_') || key.startsWith('max_')) {
-              return [key, value === '' ? undefined : Number(value)];
-            }
-            return [key, value];
-          })
-          .filter(([_, value]) => value !== undefined)
-      );
+    const maxRetries = 3;
+    let attempt = 0;
 
-      const response = await fetch('/api/superlinked/api/v1/search/property', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-include-metadata': 'True',
-        },
-        body: JSON.stringify({
-          natural_query: searchQuery.toLowerCase(),
-          limit: 30,
-          ids_exclude: [targetProperty.realId],
-          ...weights,
-          ...activeFilters,
-        }),
-      });
-      const data = await response.json();
-      setSearchResults(data);
-      console.log('Search Results:', data);
-      console.log('Applied Filters JSON:', data?.metadata?.search_params || 'No metadata available');
-      setHasSearched(true);
-    } catch (error) {
-      console.error('Error searching properties:', error);
-    } finally {
-      setLoading(false);
+    while (attempt < maxRetries) {
+      try {
+        // Filter out empty values and convert boolean filters to numbers
+        const activeFilters = Object.fromEntries(
+          Object.entries(filters)
+            .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+            .map(([key, value]) => {
+              // Convert boolean filter values from string to number
+              if (key.includes('_filter') && (key.startsWith('is_') || key.startsWith('has_') || key.startsWith('pool') || key.startsWith('spa') || key.startsWith('parking'))) {
+                return [key, value === '1' ? 1 : value === '0' ? 0 : value];
+              }
+              // Convert numeric filter values to numbers
+              if (key.startsWith('min_') || key.startsWith('max_')) {
+                return [key, value === '' ? undefined : Number(value)];
+              }
+              return [key, value];
+            })
+            .filter(([_, value]) => value !== undefined)
+        );
+
+        const response = await fetch('/api/superlinked/api/v1/search/property', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-include-metadata': 'True',
+          },
+          body: JSON.stringify({
+            natural_query: searchQuery.toLowerCase(),
+            limit: 30,
+            ids_exclude: [targetProperty.realId],
+            ...weights,
+            ...activeFilters,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setSearchResults(data);
+        console.log('Search Results:', data);
+        console.log('Applied Filters JSON:', data?.metadata?.search_params || 'No metadata available');
+        setHasSearched(true);
+        break; // Success, exit retry loop
+
+      } catch (error) {
+        attempt++;
+        console.error(`Search attempt ${attempt} failed:`, error);
+
+        if (attempt >= maxRetries) {
+          console.error('All search attempts failed');
+          // Could set an error state here if needed
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+        console.log(`Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
     }
+
+    setLoading(false);
   };
 
   const handleGuess = () => {

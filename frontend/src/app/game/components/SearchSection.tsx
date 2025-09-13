@@ -24,6 +24,8 @@ interface SearchSectionProps {
   loadingMessage: string;
   searchResults: SearchResult | null;
   targetProperty: Property | null;
+  weights: Record<string, number>;
+  setWeights: React.Dispatch<React.SetStateAction<Record<string, number>>>;
 }
 
 export default function SearchSection({
@@ -33,9 +35,12 @@ export default function SearchSection({
   loading,
   loadingMessage,
   searchResults,
-  targetProperty
+  targetProperty,
+  weights,
+  setWeights
 }: SearchSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const itemsPerPage = 3;
 
   const totalPages = searchResults ? Math.ceil(searchResults.entries.length / itemsPerPage) : 0;
@@ -92,20 +97,30 @@ export default function SearchSection({
           </div>
         </div>
 
-        <button
-          onClick={handleSearch}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-2xl font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
-              {loadingMessage}
-            </div>
-          ) : (
-            '🔍 Search'
-          )}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleSearch}
+            disabled={loading}
+            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-2xl font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-500 ease-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                {loadingMessage}
+              </div>
+            ) : (
+              '🔍 Search'
+            )}
+          </button>
+          
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="px-4 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-500 ease-out hover:scale-105"
+            title="Search Settings"
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
       {searchResults && (
@@ -454,6 +469,97 @@ export default function SearchSection({
               </button>
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl custom-scrollbar">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mr-4">
+                  <span className="text-2xl">⚙️</span>
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">Search Settings</h2>
+                  <p className="text-sm text-gray-400 mt-1">Adjust importance weights for different property attributes</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {Object.entries(weights).map(([key, value]) => {
+                const labels = {
+                  description_weight: 'Description',
+                  city_weight: 'City',
+                  street_address_weight: 'Street Address',
+                  county_weight: 'County',
+                  price_weight: 'Price',
+                  price_per_sqft_weight: 'Price per Sqft',
+                  living_area_weight: 'Living Area',
+                  home_type_weight: 'Home Type',
+                  event_weight: 'Event',
+                  levels_weight: 'Levels',
+                };
+                
+                const descriptions = {
+                  description_weight: 'How much to prioritize description matches',
+                  city_weight: 'How much to prioritize city matches',
+                  street_address_weight: 'How much to prioritize street address matches',
+                  county_weight: 'How much to prioritize county matches',
+                  price_weight: 'How much to prioritize price similarity',
+                  price_per_sqft_weight: 'How much to prioritize price per sqft similarity',
+                  living_area_weight: 'How much to prioritize living area similarity',
+                  home_type_weight: 'How much to prioritize home type matching',
+                  event_weight: 'How much to prioritize event type',
+                  levels_weight: 'How much to prioritize levels',
+                };
+
+                return (
+                  <div key={key} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-white font-medium">{labels[key as keyof typeof labels]}</label>
+                      <span className="text-cyan-300 font-bold">{value.toFixed(1)}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-3">{descriptions[key as keyof typeof descriptions]}</p>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={value}
+                      onChange={(e) => setWeights({ ...weights, [key]: parseFloat(e.target.value) })}
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-2xl font-semibold transition-all duration-300 ease-out"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-500 ease-out hover:scale-105"
+              >
+                Save Settings
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

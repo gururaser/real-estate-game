@@ -35,6 +35,18 @@ export default function Game() {
   const [loading, setLoading] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [weights, setWeights] = useState<Record<string, number>>({
+    description_weight: 1.0,
+    city_weight: 0.8,
+    street_address_weight: 0.6,
+    county_weight: 0.6,
+    price_weight: 0.5,
+    price_per_sqft_weight: 0.4,
+    living_area_weight: 0.3,
+    home_type_weight: 0.7,
+    event_weight: 0.2,
+    levels_weight: 0.1,
+  });
 
   console.log('Game component state initialized');
 
@@ -174,6 +186,7 @@ export default function Game() {
           natural_query: searchQuery.toLowerCase(),
           limit: 30,
           ids_exclude: [targetProperty.realId],
+          ...weights,
         }),
       });
       const data = await response.json();
@@ -321,6 +334,8 @@ export default function Game() {
               loadingMessage={loadingMessage}
               searchResults={searchResults}
               targetProperty={targetProperty}
+              weights={weights}
+              setWeights={setWeights}
             />
           </div>
 

@@ -100,6 +100,7 @@ export default function SearchSection({
                   { key: 'state_filter', label: 'State', value: searchResults.metadata.search_params?.state_filter, icon: '🏛️' },
                   { key: 'city_filter', label: 'City', value: searchResults.metadata.search_params?.city_filter, icon: '🏙️' },
                   { key: 'county_filter', label: 'County', value: searchResults.metadata.search_params?.county_filter, icon: '🏛️' },
+                  { key: 'street_address_filter', label: 'Street Address', value: searchResults.metadata.search_params?.street_address, icon: '🏠' },
                   { key: 'home_type_filter', label: 'Home Type', value: searchResults.metadata.search_params?.home_type_filter, icon: '🏠' },
                   { key: 'event_filter', label: 'Event', value: searchResults.metadata.search_params?.event_filter, icon: '📢' },
                   { key: 'is_bank_owned_filter', label: 'Bank Owned', value: searchResults.metadata.search_params?.is_bank_owned_filter, icon: '🏦' },
@@ -123,7 +124,7 @@ export default function SearchSection({
                 return filters.length > 0 ? (
                   <div className="space-y-6">
                     {/* Location & Property Type Filters */}
-                    {filters.some(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter'].includes(f.key)) && (
+                    {filters.some(f => ['state_filter', 'city_filter', 'county_filter', 'street_address_filter', 'home_type_filter', 'event_filter'].includes(f.key)) && (
                       <div className="space-y-4">
                         <div className="flex items-center mb-4">
                           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
@@ -133,7 +134,7 @@ export default function SearchSection({
                         </div>
 
                         <div className="space-y-3">
-                          {filters.filter(f => ['state_filter', 'city_filter', 'county_filter', 'home_type_filter', 'event_filter'].includes(f.key)).map((filter) => (
+                          {filters.filter(f => ['state_filter', 'city_filter', 'county_filter', 'street_address_filter', 'home_type_filter', 'event_filter'].includes(f.key)).map((filter) => (
                             <div key={filter.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
                               <div className="flex items-center">
                                 <span className="text-lg mr-3">{filter.icon}</span>

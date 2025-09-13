@@ -16,8 +16,8 @@ available_events = column_stats['event']['unique_values']
 available_levels = column_stats['levels']['unique_values']
 
 # Some OpenAI models (e.g., certain nano variants) reject non-default temperature values.
-# Superlinked sets temperature to 0.0 by default; set it to 1.0 to avoid 400 errors.
-sl_openai.TEMPERATURE_VALUE = 0.1  # Low temperature for more consistent NLQ results
+# # Superlinked sets temperature to 0.0 by default; set it to 1.0 to avoid 400 errors.
+# sl_openai.TEMPERATURE_VALUE = 0.1  # Low temperature for more consistent NLQ results
 
 openai_config = sl.OpenAIClientConfig(
     api_key=settings.openai_api_key.get_secret_value(),
@@ -26,7 +26,7 @@ openai_config = sl.OpenAIClientConfig(
 )
 
 
-# ---- FIELD DESCRIPTIONS (MULTI + WEIGHT) ----
+# ---- FIELD DESCRIPTIONS ----
 
 id_description = (
     "Unique property identifier, ONLY if explicitly present (e.g., 'ID abc123', 'MLS# 59021'). "
@@ -55,31 +55,20 @@ county_description = (
 )
 
 price_description = (
-    "Numeric price CEILING in USD as integer when a numeric constraint is present. "
-    "Normalize magnitudes: '1M'->1000000, 'under 800k'->800000, 'below $1.2M'->1200000. "
-    "If a RANGE appears (e.g., '700k-900k'), use the UPPER bound (900000). "
-    "If ONLY qualitative language (e.g., 'cheap', 'affordable') is used and NO number exists, set price to null."
-)
-
-price_weight_description = (
-    "Price preference WEIGHT derived from adjectives/nouns about cost. "
-    "Higher => user seeks more expensive; lower => cheaper. "
-    "Use a discrete scale: -2 (very cheap) | -1 (cheap) | 0 (no preference) | 1 (expensive) | 2 (very expensive). "
-    "Map examples: "
-    "very cheap/cheapest/lowest price -> -2; cheap/affordable/low price/not expensive -> -1; "
-    "no mention -> 0; "
-    "expensive/high price/luxurious/not cheap -> 1; very expensive/most expensive/highest price -> 2."
+    "Numeric price constraint in USD. For exact amounts (e.g., '500k'), set min_price and max_price to same value. "
+    "For 'under/below X', set only max_price=X. For 'over/above X', set only min_price=X. "
+    "For ranges 'X-Y', set min_price=X, max_price=Y. For 'around X', use 10% tolerance. "
+    "Normalize magnitudes: '1M'->1000000, '800k'->800000."
 )
 
 price_per_sqft_description = (
-    "USD per square foot (float). If given per m², convert: value_per_sqft = value_per_m2 / 10.7639, round to 2 decimals. "
-    "Accept forms like '$200/sqft', '200 per square foot', '€1200/m²' (ignore currency sign, keep numeric). "
-    "If absent/unclear, use null."
+    "USD per square foot (float). Convert m² to sqft by dividing by 10.7639, round to 2 decimals. "
+    "Accept forms like '$200/sqft', '200 per square foot', '€1200/m²'. If absent/unclear, use null."
 )
 
 living_area_description = (
-    "Living area in square feet (integer). Convert if metric given (1 m² = 10.7639 sqft; round to nearest int). "
-    "If absent/unclear, use null."
+    "Living area in square feet (integer). Convert m² to sqft: 1 m² = 10.7639 sqft, round to nearest int. "
+    "Accept 'square meters', 'sqm', 'm²', 'square feet', 'sqft', 'sq ft'. If absent/unclear, use null."
 )
 
 home_type_description = (
@@ -102,6 +91,7 @@ levels_description = (
     "If both a number and a style appear (e.g., 'tri-level two'), prefer the CLEAR enum that exists in the list; "
     "if unclear, include only the allowed style. Use [] if none."
 )
+
 system_prompt = (
     "You extract canonical search parameters for real-estate queries.\n"
     "Return ONLY a valid JSON object with ALL keys shown below. No markdown, no comments, no extra keys.\n\n"
@@ -114,7 +104,9 @@ system_prompt = (
 
     "NORMALIZATION RULES:\n"
     "• Numbers: parse magnitudes (k, M). 'under/below X' => X; 'over/above X' => X; ranges 'A–B' => use upper bound B.\n"
-    "• Areas: 1 m² = 10.7639 sqft; round living_area to nearest integer.\n"
+    "• Approximate values: 'around X', 'approximately X', 'about X', 'roughly X', 'circa X' => create a 10% tolerance range (min = X * 0.9, max = X * 1.1, rounded appropriately).\n"
+    "• Ranges: 'between X and Y', 'from X to Y', 'X-Y' => set min=X, max=Y.\n"
+    "• Areas: 1 m² = 10.7639 sqft; round living_area to nearest integer. Accept 'square meters', 'sqm', 'm²', 'square feet', 'sqft', 'sq ft'.\n"
     "• Price-per-sqft: per m² -> per sqft by dividing by 10.7639; round to 2 decimals.\n"
     "• States: two-letter lowercase codes.\n"
     "• Enums: MUST be from the allowed sets (home_type, event, levels). If no match, leave the list empty [].\n"
@@ -122,14 +114,9 @@ system_prompt = (
     "If none are explicit, use []. Do NOT infer city from county or vice versa.\n"
     "• 'id' ONLY if an explicit ID/MLS is present. Otherwise null.\n"
     "• 'description' is terse keywords for notable amenities/features only.\n"
-    "• Price preference uses TWO signals:\n"
-    "  - 'price': numeric ceiling if any numeric constraint exists; otherwise null.\n"
-    "  - 'price_weight': a discrete preference from -2..+2 derived from adjectives (see mapping below).\n\n"
-
-    "PRICE WEIGHT MAPPING:\n"
-    "very cheap/cheapest/lowest price -> -2; cheap/affordable/low price/not expensive -> -1; "
-    "no relevant price words -> 0; "
-    "expensive/high price/luxurious/not cheap -> 1; very expensive/most expensive/highest price -> 2.\n\n"
+    "• Bedrooms/Bathrooms: If exact number (e.g., '2 bedrooms'), set min and max to same value. If 'at least 2', set only min_bedrooms=2, max_bedrooms=null. If 'up to 3', set only max_bedrooms=3, min_bedrooms=null. If 'around 2' or 'approximately 2', set min_bedrooms=2, max_bedrooms=2 (no tolerance for discrete values).\n"
+    "• Price: If exact amount (e.g., '500k'), set min_price and max_price to same value. If 'under/below 500k', set only max_price=500000. If 'over/above 500k', set only min_price=500000. If range '400k-600k', set min_price=400000, max_price=600000. If 'around 500k' or 'approximately 500k', set min_price=450000, max_price=550000 (10% tolerance).\n"
+    "• Living Area: If exact size (e.g., '2000 sqft'), set min_living_area and max_living_area to same value. If 'at least 2000 sqft', set only min_living_area=2000. If 'up to 3000 sqft', set only max_living_area=3000. If 'around 2000 sqft' or 'approximately 2000 sqft', set min_living_area=1800, max_living_area=2200 (10% tolerance).\n\n"
 
     "OUTPUT FORMAT (ALWAYS include all keys):\n"
     "{\n"
@@ -138,45 +125,54 @@ system_prompt = (
     "  \"city\": [],\n"
     "  \"state\": [],\n"
     "  \"county\": [],\n"
-    "  \"price\": null,\n"
-    "  \"price_weight\": 0,\n"
+    "  \"min_price\": null,\n"
+    "  \"max_price\": null,\n"
     "  \"price_per_sqft\": null,\n"
-    "  \"living_area\": null,\n"
+    "  \"min_living_area\": null,\n"
+    "  \"max_living_area\": null,\n"
+    "  \"min_bedrooms\": null,\n"
+    "  \"max_bedrooms\": null,\n"
+    "  \"min_bathrooms\": null,\n"
+    "  \"max_bathrooms\": null,\n"
     "  \"home_type\": [],\n"
     "  \"event\": [],\n"
     "  \"levels\": []\n"
     "}\n\n"
 
     "EXAMPLES:\n"
-    "Query: 'single family homes in " + available_cities[0] + " or " + available_cities[1] + " under 1 million dollars'\n"
-    "Output: {\"id\": null, \"description\": null, \"city\": [\"" + available_cities[0] + "\", \"" + available_cities[1] + "\"], \"state\": [], "
-    "\"county\": [], \"price\": 1000000, \"price_weight\": 0, \"price_per_sqft\": null, \"living_area\": null, "
+    "Query: '3 bedroom houses in " + available_cities[0] + " between 500k and 800k with pool'\n"
+    "Output: {\"id\": null, \"description\": \"pool\", \"city\": [\"" + available_cities[0] + "\"], \"state\": [], "
+    "\"county\": [], \"min_price\": 500000, \"max_price\": 800000, \"price_per_sqft\": null, \"min_living_area\": null, \"max_living_area\": null, "
+    "\"min_bedrooms\": 3, \"max_bedrooms\": 3, \"min_bathrooms\": null, \"max_bathrooms\": null, "
     "\"home_type\": [\"single_family\"], \"event\": [], \"levels\": []}\n\n"
 
-    "Query: 'affordable condos with pool in " + available_cities[2] + " and " + available_cities[3] + "'\n"
-    "Output: {\"id\": null, \"description\": \"pool\", \"city\": [\"" + available_cities[2] + "\", \"" + available_cities[3] + "\"] , \"state\": [], "
-    "\"county\": [], \"price\": null, \"price_weight\": -1, \"price_per_sqft\": null, \"living_area\": null, "
-    "\"home_type\": [\"condo\"], \"event\": [], \"levels\": []}\n\n"
+    "Query: 'apartments around 100 square meters in " + available_cities[1] + " under $1500/m², at least 2 bedrooms'\n"
+    "Output: {\"id\": null, \"description\": null, \"city\": [\"" + available_cities[1] + "\"], \"state\": [], \"county\": [], "
+    "\"min_price\": null, \"max_price\": null, \"price_per_sqft\": 138.6, \"min_living_area\": 968, \"max_living_area\": 1184, "
+    "\"min_bedrooms\": 2, \"max_bedrooms\": null, \"min_bathrooms\": null, \"max_bathrooms\": null, "
+    "\"home_type\": [\"apartment\"], \"event\": [], \"levels\": []}\n\n"
 
-    "Query: 'lots in " + available_states[0] + " below 500k, multi/split or tri-level ok'\n"
-    "Output: {\"id\": null, \"description\": null, \"city\": [], \"state\": [\"" + available_states[0] + "\"] , \"county\": [], "
-    "\"price\": 500000, \"price_weight\": 0, \"price_per_sqft\": null, \"living_area\": null, "
-    "\"home_type\": [\"lot\"], \"event\": [], \"levels\": [\"multi/split\", \"tri-level\"]}\n\n"
+    "Query: 'luxury condos in " + available_states[0] + " over 2000 sqft, multi-level preferred'\n"
+    "Output: {\"id\": null, \"description\": null, \"city\": [], \"state\": [\"" + available_states[0] + "\"], \"county\": [], "
+    "\"min_price\": null, \"max_price\": null, \"price_per_sqft\": null, \"min_living_area\": 2000, \"max_living_area\": null, "
+    "\"min_bedrooms\": null, \"max_bedrooms\": null, \"min_bathrooms\": null, \"max_bathrooms\": null, "
+    "\"home_type\": [\"condo\"], \"event\": [], \"levels\": [\"multi/split\"]}\n\n"
 
-    "Query: 'apartments in " + available_cities[4] + " 100 m², around $1000/m², pending sales'\n"
-    "Output: {\"id\": null, \"description\": null, \"city\": [\"" + available_cities[4] + "\"] , \"state\": [], \"county\": [], "
-    "\"price\": null, \"price_weight\": 0, \"price_per_sqft\": 92.9, \"living_area\": 1076, "
-    "\"home_type\": [\"apartment\"], \"event\": [\"pending sale\"], \"levels\": []}\n\n"
-
-    "HARD EXAMPLE:\n"
-    "Query: 'tri-level townhouse in Orange County CA around 700k-900k, not cheap'\n"
+    "Query: '2-3 bedroom townhouses around 1500 sqft in Orange County CA between 600k-900k'\n"
     "Output: {\"id\": null, \"description\": null, \"city\": [], \"state\": [\"ca\"], \"county\": [\"Orange County\"], "
-    "\"price\": 900000, \"price_weight\": 1, \"price_per_sqft\": null, \"living_area\": null, "
-    "\"home_type\": [\"townhouse\"], \"event\": [], \"levels\": [\"tri-level\"]}\n\n"
+    "\"min_price\": 600000, \"max_price\": 900000, \"price_per_sqft\": null, \"min_living_area\": 1350, \"max_living_area\": 1650, "
+    "\"min_bedrooms\": 2, \"max_bedrooms\": 3, \"min_bathrooms\": null, \"max_bathrooms\": null, "
+    "\"home_type\": [\"townhouse\"], \"event\": [], \"levels\": []}\n\n"
+
+    "Query: 'single family homes under 1M in " + available_cities[2] + " or " + available_cities[3] + ", at most 2 bathrooms'\n"
+    "Output: {\"id\": null, \"description\": null, \"city\": [\"" + available_cities[2] + "\", \"" + available_cities[3] + "\"], \"state\": [], "
+    "\"county\": [], \"min_price\": null, \"max_price\": 1000000, \"price_per_sqft\": null, \"min_living_area\": null, \"max_living_area\": null, "
+    "\"min_bedrooms\": null, \"max_bedrooms\": null, \"min_bathrooms\": null, \"max_bathrooms\": 2, "
+    "\"home_type\": [\"single_family\"], \"event\": [], \"levels\": []}\n\n"
 
     "NEGATIVE/AMBIGUITY:\n"
     "• If only neighborhoods are mentioned (no clear city), keep city=[].\n"
-    "• If user says 'cheap but no number', price=null and rely on price_weight.\n"
+    "• If user says 'cheap but no number', set min_price and max_price to null.\n"
     "• Deduplicate lists; keep order of first mention.\n"
 )
 

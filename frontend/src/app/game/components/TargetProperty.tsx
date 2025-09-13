@@ -168,6 +168,7 @@ export default function TargetProperty({ targetProperty, searchResults }: Target
               state={targetProperty.fields.state}
               searchResults={searchResults?.entries || []}
               height="h-64"
+              targetProperty={targetProperty}
             />
           </div>
         </div>

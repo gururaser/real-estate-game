@@ -319,6 +319,7 @@ export default function Game() {
               loading={loading}
               loadingMessage={loadingMessage}
               searchResults={searchResults}
+              targetProperty={targetProperty}
             />
           </div>
 

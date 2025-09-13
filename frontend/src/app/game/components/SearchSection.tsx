@@ -25,6 +25,7 @@ interface SearchSectionProps {
   loading: boolean;
   loadingMessage: string;
   searchResults: SearchResult | null;
+  targetProperty: Property | null;
 }
 
 export default function SearchSection({
@@ -33,7 +34,8 @@ export default function SearchSection({
   handleSearch,
   loading,
   loadingMessage,
-  searchResults
+  searchResults,
+  targetProperty
 }: SearchSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
@@ -49,6 +51,21 @@ export default function SearchSection({
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  // Calculate distance between two coordinates
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distanceKm = R * c;
+    const distanceMiles = distanceKm * 0.621371;
+    return { km: distanceKm, miles: distanceMiles };
   };
 
   return (
@@ -311,6 +328,7 @@ export default function SearchSection({
                           city={entry.fields.city}
                           state={entry.fields.state}
                           height="h-32"
+                          targetProperty={targetProperty}
                         />
                       </div>
                     </div>
@@ -343,6 +361,22 @@ export default function SearchSection({
                       <p className="text-xs text-gray-400 mb-1">Year Built</p>
                       <p className="text-lg font-semibold text-cyan-300">{entry.fields.yearBuilt === 0 ? 'Unknown' : entry.fields.yearBuilt}</p>
                     </div>
+                    {targetProperty && (
+                      <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-3 border border-blue-500/30">
+                        <p className="text-xs text-gray-400 mb-1">📍 Distance to Target</p>
+                        <p className="text-sm font-bold text-white">
+                          {(() => {
+                            const distance = calculateDistance(
+                              targetProperty.fields.latitude,
+                              targetProperty.fields.longitude,
+                              entry.fields.latitude,
+                              entry.fields.longitude
+                            );
+                            return `${distance.km.toFixed(1)} km / ${distance.miles.toFixed(1)} mi`;
+                          })()}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

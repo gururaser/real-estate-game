@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -93,14 +93,26 @@ interface PropertyMapProps {
 }
 
 export default function PropertyMap({ latitude, longitude, address, city, state, searchResults, height = "h-64" }: PropertyMapProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   // Validate coordinates
   if (!latitude || !longitude || latitude === 0 || longitude === 0) {
     return (
-      <div className={`flex items-center justify-center ${height} bg-slate-600/50 rounded-lg`}>
+      <div className={`flex items-center justify-center ${height} bg-slate-600/50 rounded-lg relative`}>
         <div className="text-center">
           <div className="text-2xl mb-2">📍</div>
           <p className="text-sm text-gray-400">Location coordinates not available</p>
         </div>
+        {/* Expand button for invalid coordinates */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105"
+          title="Expand map"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
       </div>
     );
   }
@@ -108,7 +120,8 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
   const position: [number, number] = [latitude, longitude];
 
   return (
-    <div className={`${height} rounded-lg overflow-hidden border border-slate-600 relative`}>
+    <>
+      <div className={`${height} rounded-lg overflow-hidden border border-slate-600 relative`}>
       <MapContainer
         center={position}
         zoom={10}
@@ -195,9 +208,132 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
       </div>
 
       {/* Zoom controls hint */}
-      <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
-        Use mouse wheel to zoom
+              {/* Zoom controls hint */}
+        <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+          Use mouse wheel to zoom
+        </div>
+
+        {/* Expand button */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[1000]"
+          title="Expand map"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
       </div>
-    </div>
+
+      {/* Full Screen Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="relative w-full h-full max-w-6xl max-h-[90vh] bg-slate-800 rounded-2xl overflow-hidden border border-slate-600">
+            {/* Close button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[10000]"
+              title="Close expanded map"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Modal Map */}
+            <MapContainer
+              center={position}
+              zoom={12}
+              style={{ height: '100%', width: '100%' }}
+              className="rounded-2xl"
+              zoomControl={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              
+              {/* Search Results Markers */}
+              {searchResults && searchResults.map((property, index) => (
+                <Marker 
+                  key={index}
+                  position={[property.fields.latitude, property.fields.longitude]} 
+                  icon={searchResultIcon}
+                >
+                  <Popup>
+                    <div className="text-sm max-w-48">
+                      <div className="font-bold text-blue-600 mb-2 flex items-center">
+                        <span className="text-lg mr-1">🔍</span>
+                        Search Result
+                      </div>
+                      <div className="mb-2 text-gray-700">
+                        <div className="font-medium">Price:</div>
+                        <div className="text-lg font-bold text-green-600">${property.fields.price.toLocaleString()}</div>
+                      </div>
+                      {property.fields.streetAddress && (
+                        <div className="mb-2 text-gray-700">
+                          <div className="font-medium">Address:</div>
+                          <div className="text-xs">{property.fields.streetAddress}</div>
+                        </div>
+                      )}
+                      {property.fields.city && property.fields.state && (
+                        <div className="mb-2 text-gray-700">
+                          <div className="font-medium">Location:</div>
+                          <div className="text-xs">{property.fields.city}, {property.fields.state}</div>
+                        </div>
+                      )}
+                      <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+                        📍 Coordinates: {property.fields.latitude.toFixed(6)}, {property.fields.longitude.toFixed(6)}
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+              
+              {/* Target Property Marker */}
+              <Marker position={position} icon={targetIcon}>
+                <Popup>
+                  <div className="text-sm max-w-48">
+                    <div className="font-bold text-red-600 mb-2 flex items-center">
+                      <span className="text-lg mr-1">🎯</span>
+                      Target Property
+                    </div>
+                    {address && (
+                      <div className="mb-2 text-gray-700">
+                        <div className="font-medium">Address:</div>
+                        <div className="text-xs">{address}</div>
+                      </div>
+                    )}
+                    {city && state && (
+                      <div className="mb-2 text-gray-700">
+                        <div className="font-medium">Location:</div>
+                        <div className="text-xs">{city}, {state}</div>
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+                      📍 Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            </MapContainer>
+
+            {/* Modal Info Overlay */}
+            <div className="absolute bottom-4 left-4 bg-black/80 text-white text-sm px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <span className="font-medium">📍 Coordinates:</span> {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                </div>
+                {address && (
+                  <div>
+                    <span className="font-medium">🏠 Address:</span> {address}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

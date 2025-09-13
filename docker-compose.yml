@@ -2,7 +2,7 @@ services:
   # Qdrant Vector Database
   qdrant:
     image: qdrant/qdrant:latest
-    container_name: real-estate_qdrant
+    container_name: real-estate-game_qdrant
     ports:
       - "6333:6333"  # REST API
       - "6334:6334"  # gRPC API (optional)
@@ -11,10 +11,10 @@ services:
     environment:
       - QDRANT_SERVICE_GRPC_PORT=6334
     networks:
-      - real-estate_network
+      - real-estate-game_network
     restart: unless-stopped
     labels:
-      - "project=real-estate"
+      - "project=real-estate-game"
       - "service=qdrant"
 
   # Superlinked Server
@@ -22,7 +22,7 @@ services:
     build:
       context: ./superlinked_app
       dockerfile: Dockerfile
-    container_name: real-estate_superlinked
+    container_name: real-estate-game_superlinked
     env_file:
       - ./superlinked_app/.env
     environment:
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./data:/app/data
     networks:
-      - real-estate_network
+      - real-estate-game_network
     depends_on:
       - qdrant
     restart: unless-stopped
@@ -44,7 +44,7 @@ services:
               count: all
               capabilities: [gpu]
     labels:
-      - "project=real-estate"
+      - "project=real-estate-game"
       - "service=superlinked"
     # Wait for backend service to be ready
     healthcheck:
@@ -59,27 +59,27 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: real-estate_frontend
+    container_name: real-estate-game_frontend
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     networks:
-      - real-estate_network
+      - real-estate-game_network
     depends_on:
       - superlinked
     restart: unless-stopped
     labels:
-      - "project=real-estate"
+      - "project=real-estate-game"
       - "service=frontend"
 
 networks:
-  real-estate_network:
-    name: real-estate_network
+  real-estate-game_network:
+    name: real-estate-game_network
 
 volumes:
   qdrant_data:
     labels:
-      - "project=real-estate"
+      - "project=real-estate-game"
       - "service=qdrant"

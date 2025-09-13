@@ -93,7 +93,7 @@ levels_description = (
 )
 
 system_prompt = (
-    "You extract canonical search parameters for real-estate queries.\n"
+    "You extract canonical search parameters for real-estate-game queries.\n"
     "Return ONLY a valid JSON object with ALL keys shown below. No markdown, no comments, no extra keys.\n\n"
 
     "DATASET CONTEXT:\n"

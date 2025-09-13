@@ -2,12 +2,15 @@
 
 ![Real Estate Game Banner](intro.png)
 
+## 🎥 Video Demo
+https://github.com/user-attachments/assets/aac8ed1f-bcc3-4b92-9c2b-1bf866bb6dd2
+
 An AI-powered real estate price prediction game where players guess hidden property prices using natural language search and market analysis. Challenge yourself with 43K+ real property listings from California & Georgia!
 
 ## 🎯 Features
 
 - **Random Property Challenge**: A random property listing appears with price hidden - study all available details carefully
-- **AI-Powered Search**: Use natural language queries to find comparable properties and gain market insights
+- **AI-Powered Search**: Use natural language queries to find comparable properties and gain market insights. The AI uses natural language to understand your query and extract meaningful filters. Behind the scenes, Superlinked creates multi-modal vectors and Qdrant acts as the vector database.
 - **Interactive Map**: Visualize property locations and explore the neighborhood
 - **Medal System**: Earn Gold (±10% accuracy), Silver (±20%), or Bronze (±30%) medals based on your guess accuracy
 - **Advanced Filtering**: Apply multiple filters including price range, bedrooms, bathrooms, property type, and more

@@ -1,0 +1,78 @@
+services:
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: real-estate_qdrant
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC API (optional)
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT_SERVICE_GRPC_PORT=6334
+    networks:
+      - real-estate_network
+    restart: unless-stopped
+    labels:
+      - "project=real-estate"
+      - "service=qdrant"
+
+  # Superlinked Server (CPU Version)
+  superlinked:
+    build:
+      context: ./superlinked_app
+      dockerfile: Dockerfile
+    container_name: real-estate_superlinked
+    env_file:
+      - ./superlinked_app/.env
+    environment:
+      - GPU_EMBEDDING_THRESHOLD=0  # Disable GPU embeddings
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - real-estate_network
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+    labels:
+      - "project=real-estate"
+      - "service=superlinked"
+    # Wait for backend service to be ready
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Frontend Next.js App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: real-estate_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - real-estate_network
+    depends_on:
+      - superlinked
+    restart: unless-stopped
+    labels:
+      - "project=real-estate"
+      - "service=frontend"
+
+networks:
+  real-estate_network:
+    name: real-estate_network
+
+volumes:
+  qdrant_data:
+    labels:
+      - "project=real-estate"
+      - "service=qdrant"

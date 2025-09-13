@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { SearchResult, Property } from '../types';
-import { formatHomeType } from '../utils';
+import { formatHomeType, FILTER_OPTIONS } from '../utils';
 
 // Dynamically import map component to avoid SSR issues
 const PropertyMap = dynamic(() => import('../../components/PropertyMap'), {
@@ -26,6 +26,8 @@ interface SearchSectionProps {
   targetProperty: Property | null;
   weights: Record<string, number>;
   setWeights: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  filters: Record<string, any>;
+  setFilters: React.Dispatch<React.SetStateAction<Record<string, any>>>;
 }
 
 export default function SearchSection({
@@ -37,13 +39,16 @@ export default function SearchSection({
   searchResults,
   targetProperty,
   weights,
-  setWeights
+  setWeights,
+  filters,
+  setFilters
 }: SearchSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
   const itemsPerPage = 3;
 
-  const totalPages = searchResults ? Math.ceil(searchResults.entries.length / itemsPerPage) : 0;
+  const totalPages = searchResults ? Math.ceil(searchResults.entries?.length / itemsPerPage) : 0;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = searchResults ? searchResults.entries.slice(startIndex, endIndex) : [];
@@ -54,6 +59,23 @@ export default function SearchSection({
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  // Auto search functions for modal buttons
+  const handleSaveSettings = () => {
+    setShowSettingsModal(false);
+    // Only auto-search if there's a previous search query
+    if (searchQuery.trim()) {
+      handleSearch();
+    }
+  };
+
+  const handleApplyFilters = () => {
+    setShowFiltersModal(false);
+    // Only auto-search if there's a previous search query
+    if (searchQuery.trim()) {
+      handleSearch();
+    }
   };
 
   // Calculate distance between two coordinates
@@ -114,8 +136,16 @@ export default function SearchSection({
           </button>
           
           <button
-            onClick={() => setShowSettingsModal(true)}
+            onClick={() => setShowFiltersModal(true)}
             className="px-4 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-500 ease-out hover:scale-105"
+            title="Filters"
+          >
+            🎯
+          </button>
+          
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="px-4 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-500 ease-out hover:scale-105"
             title="Search Settings"
           >
             ⚙️
@@ -126,11 +156,11 @@ export default function SearchSection({
       {searchResults && (
         <div className="mt-8 animate-in slide-in-from-left-4 fade-in duration-700">
           {/* Applied Filters */}
-          <details className="group mb-8 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+          <details className="group mb-8 bg-white/5 rounded-xl border border-white/10 overflow-hidden relative z-10">
             <summary className="cursor-pointer p-4 hover:bg-white/10 transition-all duration-500 ease-out flex items-center justify-between">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3">
-                  <span className="text-xl">🔧</span>
+                  <span className="text-xl">🎯</span>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-white">Applied Filters</h3>
@@ -297,18 +327,18 @@ export default function SearchSection({
             </div>
           </details>
 
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-6 relative z-10">
             <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3">
               <span className="text-xl">📊</span>
             </div>
             <h3 className="text-2xl font-bold text-white">Search Results</h3>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             {currentItems.map((entry, index) => (
               <div
                 key={index}
-                className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 ease-out hover:scale-102 animate-in slide-in-from-bottom-4 fade-in duration-700"
+                className="bg-white/5 rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 ease-out hover:scale-102 animate-in slide-in-from-bottom-4 fade-in duration-700 relative z-10"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -441,7 +471,7 @@ export default function SearchSection({
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-between">
+            <div className="mt-8 flex items-center justify-between relative z-10">
               <button
                 onClick={goToPrevPage}
                 disabled={currentPage === 1}
@@ -474,7 +504,7 @@ export default function SearchSection({
       
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl custom-scrollbar">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
@@ -547,16 +577,260 @@ export default function SearchSection({
 
             <div className="flex gap-3 mt-8">
               <button
+                onClick={() => {
+                  setWeights({
+                    description_weight: 1.0,
+                    city_weight: 0.8,
+                    street_address_weight: 0.6,
+                    county_weight: 0.6,
+                    price_weight: 0.5,
+                    price_per_sqft_weight: 0.4,
+                    living_area_weight: 0.3,
+                    home_type_weight: 0.7,
+                    event_weight: 0.2,
+                    levels_weight: 0.1,
+                  });
+                  // Only auto-search if there's a previous search query
+                  if (searchQuery.trim()) {
+                    setTimeout(() => handleSearch(), 100); // Small delay to ensure state update
+                  }
+                }}
+                className="px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-orange-500/25 transition-all duration-300 ease-out hover:scale-105"
+                title="Reset all weights to default values"
+              >
+                🔄 Reset Defaults
+              </button>
+              <button
                 onClick={() => setShowSettingsModal(false)}
                 className="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-2xl font-semibold transition-all duration-300 ease-out"
               >
                 Cancel
               </button>
               <button
-                onClick={() => setShowSettingsModal(false)}
+                onClick={handleSaveSettings}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-500 ease-out hover:scale-105"
               >
                 Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filters Modal */}
+      {showFiltersModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl custom-scrollbar">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mr-4">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">Property Filters</h2>
+                  <p className="text-sm text-gray-400 mt-1">Filter properties by specific criteria</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFiltersModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-8">
+              {/* Location & Property Type Filters */}
+              <div className="space-y-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-lg">📍</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Location & Type</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* State Filter */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium">State</label>
+                    <select
+                      value={filters.state_filter}
+                      onChange={(e) => setFilters({ ...filters, state_filter: e.target.value })}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                    >
+                      <option value="">All States</option>
+                      {FILTER_OPTIONS.state.map((state) => (
+                        <option key={state} value={state} className="bg-slate-800">
+                          {state.toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Home Type Filter */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium">Home Type</label>
+                    <select
+                      value={filters.home_type_filter}
+                      onChange={(e) => setFilters({ ...filters, home_type_filter: e.target.value })}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                    >
+                      <option value="">All Types</option>
+                      {FILTER_OPTIONS.homeType.map((type) => (
+                        <option key={type} value={type} className="bg-slate-800">
+                          {formatHomeType(type)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Event Filter */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium">Event</label>
+                    <select
+                      value={filters.event_filter}
+                      onChange={(e) => setFilters({ ...filters, event_filter: e.target.value })}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                    >
+                      <option value="">All Events</option>
+                      {FILTER_OPTIONS.event.map((event) => (
+                        <option key={event} value={event} className="bg-slate-800">
+                          {event.charAt(0).toUpperCase() + event.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Levels Filter */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium">Levels</label>
+                    <select
+                      value={filters.levels_filter}
+                      onChange={(e) => setFilters({ ...filters, levels_filter: e.target.value })}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                    >
+                      <option value="">All Levels</option>
+                      {FILTER_OPTIONS.levels.map((level) => (
+                        <option key={level} value={level} className="bg-slate-800">
+                          {level}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Features & Amenities */}
+              <div className="space-y-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-lg">🏠</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Features & Amenities</h3>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {FILTER_OPTIONS.booleanFilters.map((filter) => (
+                    <div key={filter.key} className="space-y-2">
+                      <label className="text-white font-medium text-sm">{filter.label}</label>
+                      <select
+                        value={filters[`${filter.key}_filter`]}
+                        onChange={(e) => setFilters({ ...filters, [`${filter.key}_filter`]: e.target.value })}
+                        className="w-full p-2 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-300"
+                      >
+                        <option value="">Any</option>
+                        <option value="1" className="bg-slate-800">Yes</option>
+                        <option value="0" className="bg-slate-800">No</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price & Size Ranges */}
+              <div className="space-y-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-lg">📊</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Price & Size Ranges</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {FILTER_OPTIONS.rangeFilters.map((filter) => (
+                    <div key={filter.key} className="space-y-4">
+                      <label className="text-white font-medium">{filter.label}</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs text-gray-400">Min</label>
+                          <input
+                            type="number"
+                            value={filters[`min_${filter.key}`]}
+                            onChange={(e) => setFilters({ ...filters, [`min_${filter.key}`]: e.target.value })}
+                            placeholder={`Min ${filter.label.toLowerCase()}`}
+                            className="w-full p-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs text-gray-400">Max</label>
+                          <input
+                            type="number"
+                            value={filters[`max_${filter.key}`]}
+                            onChange={(e) => setFilters({ ...filters, [`max_${filter.key}`]: e.target.value })}
+                            placeholder={`Max ${filter.label.toLowerCase()}`}
+                            className="w-full p-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => {
+                  setFilters({
+                    state_filter: '',
+                    city_filter: '',
+                    county_filter: '',
+                    home_type_filter: '',
+                    event_filter: '',
+                    levels_filter: '',
+                    is_bank_owned_filter: '',
+                    is_for_auction_filter: '',
+                    parking_filter: '',
+                    has_garage_filter: '',
+                    pool_filter: '',
+                    spa_filter: '',
+                    is_new_construction_filter: '',
+                    has_pets_allowed_filter: '',
+                    max_price: '',
+                    min_price: '',
+                    max_bedrooms: '',
+                    min_bedrooms: '',
+                    max_bathrooms: '',
+                    min_bathrooms: '',
+                    max_living_area: '',
+                    min_living_area: '',
+                  });
+                  // Only auto-search if there's a previous search query
+                  if (searchQuery.trim()) {
+                    setTimeout(() => handleSearch(), 100); // Small delay to ensure state update
+                  }
+                }}
+                className="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-2xl font-semibold transition-all duration-300 ease-out"
+              >
+                Clear All
+              </button>
+              <button
+                onClick={handleApplyFilters}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-500 ease-out hover:scale-105"
+              >
+                Apply Filters
               </button>
             </div>
           </div>

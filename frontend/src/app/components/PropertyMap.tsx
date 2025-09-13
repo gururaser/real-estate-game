@@ -118,7 +118,7 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
         {/* Expand button for invalid coordinates */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105"
+          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[50]"
           title="Expand map"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
         {/* Expand button */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[1000]"
+          className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[50]"
           title="Expand map"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,12 +286,12 @@ export default function PropertyMap({ latitude, longitude, address, city, state,
 
       {/* Full Screen Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
           <div className="relative w-full h-full max-w-6xl max-h-[90vh] bg-slate-800 rounded-2xl overflow-hidden border border-slate-600">
             {/* Close button */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[10000]"
+              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-105 z-[300]"
               title="Close expanded map"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -47,6 +47,33 @@ export default function Game() {
     event_weight: 0.2,
     levels_weight: 0.1,
   });
+  const [filters, setFilters] = useState<Record<string, any>>({
+    // Categorical filters
+    state_filter: '',
+    city_filter: '',
+    county_filter: '',
+    home_type_filter: '',
+    event_filter: '',
+    levels_filter: '',
+    // Boolean filters
+    is_bank_owned_filter: '',
+    is_for_auction_filter: '',
+    parking_filter: '',
+    has_garage_filter: '',
+    pool_filter: '',
+    spa_filter: '',
+    is_new_construction_filter: '',
+    has_pets_allowed_filter: '',
+    // Range filters
+    max_price: '',
+    min_price: '',
+    max_bedrooms: '',
+    min_bedrooms: '',
+    max_bathrooms: '',
+    min_bathrooms: '',
+    max_living_area: '',
+    min_living_area: '',
+  });
 
   console.log('Game component state initialized');
 
@@ -176,6 +203,24 @@ export default function Game() {
 
     setLoading(true);
     try {
+      // Filter out empty values and convert boolean filters to numbers
+      const activeFilters = Object.fromEntries(
+        Object.entries(filters)
+          .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+          .map(([key, value]) => {
+            // Convert boolean filter values from string to number
+            if (key.includes('_filter') && (key.startsWith('is_') || key.startsWith('has_') || key.startsWith('pool') || key.startsWith('spa') || key.startsWith('parking'))) {
+              return [key, value === '1' ? 1 : value === '0' ? 0 : value];
+            }
+            // Convert numeric filter values to numbers
+            if (key.startsWith('min_') || key.startsWith('max_')) {
+              return [key, value === '' ? undefined : Number(value)];
+            }
+            return [key, value];
+          })
+          .filter(([_, value]) => value !== undefined)
+      );
+
       const response = await fetch('/api/superlinked/api/v1/search/property', {
         method: 'POST',
         headers: {
@@ -187,12 +232,13 @@ export default function Game() {
           limit: 30,
           ids_exclude: [targetProperty.realId],
           ...weights,
+          ...activeFilters,
         }),
       });
       const data = await response.json();
       setSearchResults(data);
       console.log('Search Results:', data);
-      console.log('Applied Filters JSON:', data.metadata.search_params);
+      console.log('Applied Filters JSON:', data?.metadata?.search_params || 'No metadata available');
       setHasSearched(true);
     } catch (error) {
       console.error('Error searching properties:', error);
@@ -336,6 +382,8 @@ export default function Game() {
               targetProperty={targetProperty}
               weights={weights}
               setWeights={setWeights}
+              filters={filters}
+              setFilters={setFilters}
             />
           </div>
 
